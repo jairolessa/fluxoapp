@@ -13,6 +13,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import * as Yup from 'yup';
+import { mockAuthStore } from '../../services/mockAuthStore';
 
 const colors = {
   green: '#16A34A',
@@ -46,9 +47,10 @@ const loginSchema = Yup.object({
 
 type LoginScreenProps = {
   onCreateAccount: () => void;
+  onLoginSuccess: (user: { id: string; fullName: string; preferredName?: string }) => void;
 };
 
-export default function LoginScreen({ onCreateAccount }: LoginScreenProps) {
+export default function LoginScreen({ onCreateAccount, onLoginSuccess }: LoginScreenProps) {
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
 
   const showUnavailableAction = (title: string) => {
@@ -56,7 +58,12 @@ export default function LoginScreen({ onCreateAccount }: LoginScreenProps) {
   };
 
   const handleLogin = (values: LoginValues) => {
-    Alert.alert('Dados validados', `Pronto para entrar com ${values.email}.`);
+    try{
+      const user = mockAuthStore.login(values.email, values.password);
+      onLoginSuccess(user);
+    } catch(err) {
+      Alert.alert('Não foi possível entrar', (err as Error).message);
+    }
   };
 
   return (

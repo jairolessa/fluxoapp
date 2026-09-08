@@ -1,5 +1,5 @@
 import { Formik } from 'formik';
-import { useState } from 'react';
+import { cache, useState } from 'react';
 import {
   KeyboardAvoidingView,
   Platform,
@@ -10,9 +10,11 @@ import {
   TextInput,
   TextInputProps,
   View,
+  Alert
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import * as Yup from 'yup';
+import { mockAuthStore } from '../../services/mockAuthStore';
 
 const colors = {
   green: '#16A34A',
@@ -34,7 +36,7 @@ type RegisterValues = {
 
 type RegisterScreenProps = {
   onBackToLogin: () => void;
-  onRegistrationComplete: (fullName: string) => void;
+  onRegistrationComplete: (fullName: string, userId: string) => void;
 };
 
 const initialValues: RegisterValues = {
@@ -73,8 +75,12 @@ export default function RegisterScreen({
   const [isConfirmationVisible, setIsConfirmationVisible] = useState(false);
 
   const handleRegister = (values: RegisterValues) => {
-    // A verificação de e-mail único deve ser confirmada pela API antes de criar a conta.
-    onRegistrationComplete(values.fullName);
+    try{
+      const user = mockAuthStore.register(values.fullName, values.email, values.password)
+      onRegistrationComplete(values.fullName, user.id);
+    } catch(err){
+      Alert.alert('Não foi possível criar a conta', (err as Error).message);
+    }
   };
 
   return (

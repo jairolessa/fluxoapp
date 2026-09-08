@@ -7,9 +7,9 @@ export default function RegisterRoute() {
   return (
     <RegisterScreen
       onBackToLogin={() => router.replace('/')}
-      onRegistrationComplete={(fullName) => {
+      onRegistrationComplete={(fullName, userId) => {
         const [firstName] = fullName.trim().split(/\s+/);
-        router.push({ pathname: '/personalize-name', params: { firstName } });
+        router.push({ pathname: '/personalize-name', params: { firstName, userId } });
       }}
     />
   );
