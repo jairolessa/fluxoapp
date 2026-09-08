@@ -1,5 +1,5 @@
 import { useLocalSearchParams } from 'expo-router';
-import HomeScreen from '../src/screens/home';
+import HomeScreen from '../src/screens/home/home-screen';
 
 export default function HomeRoute() {
   const { preferredName } = useLocalSearchParams<{ preferredName?: string | string[] }>();

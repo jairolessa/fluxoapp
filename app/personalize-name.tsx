@@ -1,5 +1,5 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import PersonalizeNameScreen from '../src/screens/personalize-name';
+import PersonalizeNameScreen from '../src/screens/personalize-name/personalize-name-screen';
 import { mockAuthStore } from '../src/services/mockAuthStore';
 
 export default function PersonalizeNameRoute() {
@@ -16,7 +16,7 @@ export default function PersonalizeNameRoute() {
       initialName={initialName ?? ''}
       onContinue={(preferredName) => {
         if(resolvedUserId) mockAuthStore.setPreferredName(resolvedUserId, preferredName);
-        router.replace({ pathname: '/home', params: { preferredName } });
+        router.dismissTo({ pathname: '/'});
       }}
     />
   );
