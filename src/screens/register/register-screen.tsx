@@ -1,5 +1,5 @@
 import { Formik } from 'formik';
-import { cache, useState } from 'react';
+import { useState } from 'react';
 import {
   KeyboardAvoidingView,
   Platform,
