@@ -14,15 +14,16 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import * as Yup from 'yup';
 import { mockAuthStore } from '../../services/mockAuthStore';
+import { colors as themeColors, typography } from '../../theme/tokens';
 
 const colors = {
-  green: '#16A34A',
-  darkGreen: '#166534',
-  navy: '#0F172A',
-  white: '#FFFFFF',
-  muted: '#64748B',
-  danger: '#DC2626',
-  border: '#CBD5E1',
+  green: themeColors.brand,
+  darkGreen: themeColors.primary,
+  navy: themeColors.navy,
+  white: themeColors.surface,
+  muted: themeColors.muted,
+  danger: themeColors.danger,
+  border: themeColors.border,
 };
 
 type LoginValues = {
@@ -52,6 +53,7 @@ type LoginScreenProps = {
 
 export default function LoginScreen({ onCreateAccount, onLoginSuccess }: LoginScreenProps) {
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
+  const [focusedField, setFocusedField] = useState<'email' | 'password' | 'submit' | 'signup' | 'forgot' | null>(null);
 
   const showUnavailableAction = (title: string) => {
     Alert.alert(title, 'Esta funcionalidade será disponibilizada em breve.');
@@ -93,6 +95,7 @@ export default function LoginScreen({ onCreateAccount, onLoginSuccess }: LoginSc
 
             <Formik
               initialValues={initialValues}
+              validateOnMount
               validationSchema={loginSchema}
               onSubmit={handleLogin}
             >
@@ -102,6 +105,7 @@ export default function LoginScreen({ onCreateAccount, onLoginSuccess }: LoginSc
                 handleChange,
                 handleSubmit,
                 isValid,
+                isValidating,
                 touched,
                 values,
               }) => (
@@ -114,11 +118,12 @@ export default function LoginScreen({ onCreateAccount, onLoginSuccess }: LoginSc
                       autoComplete="email"
                       autoCorrect={false}
                       keyboardType="email-address"
-                      onBlur={handleBlur('email')}
+                      onBlur={(event) => { setFocusedField(null); handleBlur('email')(event); }}
                       onChangeText={handleChange('email')}
+                      onFocus={() => setFocusedField('email')}
                       placeholder="voce@exemplo.com"
                       placeholderTextColor={colors.muted}
-                      style={[styles.input, touched.email && errors.email ? styles.inputError : undefined]}
+                      style={[styles.input, focusedField === 'email' ? styles.inputFocused : undefined, touched.email && errors.email ? styles.inputError : undefined]}
                       textContentType="emailAddress"
                       value={values.email}
                     />
@@ -129,12 +134,13 @@ export default function LoginScreen({ onCreateAccount, onLoginSuccess }: LoginSc
 
                   <View>
                     <Text style={styles.label}>Senha</Text>
-                    <View style={[styles.passwordContainer, touched.password && errors.password ? styles.inputError : undefined]}>
+                    <View style={[styles.passwordContainer, focusedField === 'password' ? styles.inputFocused : undefined, touched.password && errors.password ? styles.inputError : undefined]}>
                       <TextInput
                         accessibilityLabel="Senha"
                         autoComplete="current-password"
-                        onBlur={handleBlur('password')}
+                        onBlur={(event) => { setFocusedField(null); handleBlur('password')(event); }}
                         onChangeText={handleChange('password')}
+                        onFocus={() => setFocusedField('password')}
                         onSubmitEditing={() => handleSubmit()}
                         placeholder="Digite sua senha"
                         placeholderTextColor={colors.muted}
@@ -160,20 +166,25 @@ export default function LoginScreen({ onCreateAccount, onLoginSuccess }: LoginSc
 
                   <Pressable
                     accessibilityRole="link"
+                    onFocus={() => setFocusedField('forgot')}
+                    onBlur={() => setFocusedField(null)}
                     onPress={() => showUnavailableAction('Redefinir senha')}
-                    style={styles.forgotPasswordButton}
+                    style={({ pressed }) => [styles.forgotPasswordButton, focusedField === 'forgot' ? styles.linkFocused : undefined, pressed ? styles.buttonPressed : undefined]}
                   >
                     <Text style={styles.forgotPasswordText}>Esqueci minha senha</Text>
                   </Pressable>
 
                   <Pressable
                     accessibilityRole="button"
-                    disabled={!isValid}
+                    disabled={!isValid || isValidating}
+                    onFocus={() => setFocusedField('submit')}
+                    onBlur={() => setFocusedField(null)}
                     onPress={() => handleSubmit()}
                     style={({ pressed }) => [
                       styles.loginButton,
-                      !isValid ? styles.loginButtonDisabled : undefined,
-                      pressed && isValid ? styles.buttonPressed : undefined,
+                      !isValid || isValidating ? styles.loginButtonDisabled : undefined,
+                      pressed && isValid && !isValidating ? styles.buttonPressed : undefined,
+                      focusedField === 'submit' ? styles.buttonFocused : undefined,
                     ]}
                   >
                     <Text style={styles.loginButtonText}>Entrar</Text>
@@ -186,14 +197,17 @@ export default function LoginScreen({ onCreateAccount, onLoginSuccess }: LoginSc
               <Text style={styles.signupText}>Ainda não tem uma conta?</Text>
               <Pressable
                 accessibilityRole="link"
+                onFocus={() => setFocusedField('signup')}
+                onBlur={() => setFocusedField(null)}
                 onPress={onCreateAccount}
+                style={({ pressed }) => [styles.signupLinkTarget, focusedField === 'signup' ? styles.linkFocused : undefined, pressed ? styles.buttonPressed : undefined]}
               >
                 <Text style={styles.signupLink}> Criar conta</Text>
               </Pressable>
             </View>
           </View>
 
-          <Text style={styles.securityNote}>Seus dados são protegidos e tratados com segurança.</Text>
+          <Text style={styles.securityNote}>Autenticação simulada: contas e senhas existem apenas durante esta execução e são apagadas ao reiniciar o app. Não use uma senha real.</Text>
         </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>
@@ -214,34 +228,38 @@ const styles = StyleSheet.create({
   brandName: { color: colors.white, fontSize: 30, fontWeight: '800', letterSpacing: 2 },
   tagline: { color: '#86EFAC', fontSize: 16, marginTop: 10 },
   card: { backgroundColor: colors.white, borderRadius: 24, padding: 24 },
-  title: { color: colors.navy, fontSize: 28, fontWeight: '800' },
-  subtitle: { color: colors.muted, fontSize: 15, lineHeight: 22, marginTop: 8 },
+  title: { color: colors.navy, fontSize: typography.size.screenTitle, fontWeight: typography.weight.extraBold, lineHeight: typography.lineHeight.screenTitle },
+  subtitle: { color: colors.muted, fontSize: typography.size.body, lineHeight: typography.lineHeight.body, marginTop: 8 },
   form: { gap: 18, marginTop: 28 },
-  label: { color: colors.navy, fontSize: 14, fontWeight: '700', marginBottom: 8 },
+  label: { color: colors.navy, fontSize: typography.size.label, fontWeight: typography.weight.bold, marginBottom: 8 },
   input: {
     borderColor: colors.border, borderRadius: 12, borderWidth: 1, color: colors.navy,
-    fontSize: 16, height: 52, paddingHorizontal: 16,
+    fontSize: typography.size.body, height: 52, paddingHorizontal: 16,
   },
   passwordContainer: {
     alignItems: 'center', borderColor: colors.border, borderRadius: 12, borderWidth: 1,
     flexDirection: 'row', height: 52,
   },
-  passwordInput: { color: colors.navy, flex: 1, fontSize: 16, height: '100%', paddingHorizontal: 16 },
+  passwordInput: { color: colors.navy, flex: 1, fontSize: typography.size.body, height: '100%', paddingHorizontal: 16 },
   visibilityButton: { justifyContent: 'center', minHeight: 44, paddingHorizontal: 14 },
   visibilityText: { color: colors.darkGreen, fontSize: 13, fontWeight: '700' },
   inputError: { borderColor: colors.danger },
+  inputFocused: { borderColor: colors.darkGreen, borderWidth: 2 },
   errorText: { color: colors.danger, fontSize: 12, marginTop: 6 },
-  forgotPasswordButton: { alignSelf: 'flex-end', marginTop: -6 },
+  forgotPasswordButton: { alignSelf: 'flex-end', justifyContent: 'center', marginTop: -6, minHeight: 44, minWidth: 44 },
   forgotPasswordText: { color: colors.darkGreen, fontSize: 14, fontWeight: '700' },
   loginButton: {
-    alignItems: 'center', backgroundColor: colors.green, borderRadius: 12,
+    alignItems: 'center', backgroundColor: colors.darkGreen, borderRadius: 12,
     justifyContent: 'center', minHeight: 54, marginTop: 2,
   },
-  loginButtonDisabled: { backgroundColor: '#86BFA0' },
+  loginButtonDisabled: { backgroundColor: '#64748B' },
   buttonPressed: { opacity: 0.86 },
+  buttonFocused: { borderColor: colors.green, borderWidth: 3 },
   loginButtonText: { color: colors.white, fontSize: 16, fontWeight: '800' },
-  signupRow: { alignItems: 'center', flexDirection: 'row', justifyContent: 'center', marginTop: 26 },
+  signupRow: { alignItems: 'center', flexDirection: 'row', justifyContent: 'center', marginTop: 26, minHeight: 44 },
   signupText: { color: colors.muted, fontSize: 14 },
   signupLink: { color: colors.darkGreen, fontSize: 14, fontWeight: '800' },
+  signupLinkTarget: { alignItems: 'center', justifyContent: 'center', minHeight: 44, minWidth: 44 },
+  linkFocused: { borderColor: colors.green, borderRadius: 6, borderWidth: 2 },
   securityNote: { color: '#CBD5E1', fontSize: 12, lineHeight: 18, marginTop: 24, textAlign: 'center' },
 });

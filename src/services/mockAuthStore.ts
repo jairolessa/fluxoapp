@@ -1,5 +1,3 @@
-import { string } from "yup";
-
 type MockUser = {
     id: string,
     fullName: string,
@@ -13,20 +11,21 @@ let users: MockUser[] = [];
 export const mockAuthStore = {
 
     register(fullName: string, email: string, password: string): MockUser {
-        const exists = users.some((user) => user.email.toLowerCase() === email.toLowerCase());
+        const normalizedEmail = email.trim().toLowerCase();
+        const exists = users.some((user) => user.email.toLowerCase() === normalizedEmail);
 
         if(exists) {
             throw new Error('Email já cadastrado!');
         }
 
-        const newUser: MockUser = { id: String(Date.now()), fullName, email, password };
+        const newUser: MockUser = { id: `${Date.now()}-${Math.random().toString(36).slice(2)}`, fullName: fullName.trim(), email: normalizedEmail, password };
         users.push(newUser);
         return newUser;
     },
 
     login(email: string, password: string): MockUser {
         const user = users.find(
-            (u) => u.email.toLowerCase() === email.toLowerCase() && u.password === password
+            (u) => u.email.toLowerCase() === email.trim().toLowerCase() && u.password === password
         );
 
         if(!user){
@@ -41,7 +40,4 @@ export const mockAuthStore = {
         if(user) user.preferredName = preferredName;
     },
 
-    listUsers(): MockUser[] {
-        return users;
-    },
 };

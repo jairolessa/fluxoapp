@@ -15,15 +15,16 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import * as Yup from 'yup';
 import { mockAuthStore } from '../../services/mockAuthStore';
+import { colors as themeColors, typography } from '../../theme/tokens';
 
 const colors = {
-  green: '#16A34A',
-  darkGreen: '#166534',
-  navy: '#0F172A',
-  white: '#FFFFFF',
-  muted: '#64748B',
-  danger: '#DC2626',
-  border: '#CBD5E1',
+  green: themeColors.brand,
+  darkGreen: themeColors.primary,
+  navy: themeColors.navy,
+  white: themeColors.surface,
+  muted: themeColors.muted,
+  danger: themeColors.danger,
+  border: themeColors.border,
 };
 
 type RegisterValues = {
@@ -31,7 +32,7 @@ type RegisterValues = {
   email: string;
   password: string;
   confirmPassword: string;
-  acceptedTerms: boolean;
+  understoodDemo: boolean;
 };
 
 type RegisterScreenProps = {
@@ -44,13 +45,13 @@ const initialValues: RegisterValues = {
   email: '',
   password: '',
   confirmPassword: '',
-  acceptedTerms: false,
+  understoodDemo: false,
 };
 
 const registerSchema = Yup.object({
   fullName: Yup.string()
     .trim()
-    .min(10, 'Informe seu nome completo.')
+    .test('full-name', 'Informe seu nome e sobrenome.', (value) => (value?.trim().split(/\s+/).filter(Boolean).length ?? 0) >= 2)
     .required('O nome completo é obrigatório.'),
   email: Yup.string()
     .trim()
@@ -62,9 +63,9 @@ const registerSchema = Yup.object({
   confirmPassword: Yup.string()
     .oneOf([Yup.ref('password')], 'As senhas devem ser iguais.')
     .required('Confirme sua senha.'),
-  acceptedTerms: Yup.boolean()
-    .oneOf([true], 'Você precisa aceitar os termos para continuar.')
-    .required('Você precisa aceitar os termos para continuar.'),
+  understoodDemo: Yup.boolean()
+    .oneOf([true], 'Confirme que entendeu os limites da demonstração.')
+    .required('Confirme que entendeu os limites da demonstração.'),
 });
 
 export default function RegisterScreen({
@@ -73,6 +74,7 @@ export default function RegisterScreen({
 }: RegisterScreenProps) {
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const [isConfirmationVisible, setIsConfirmationVisible] = useState(false);
+  const [isCreateFocused, setIsCreateFocused] = useState(false);
 
   const handleRegister = (values: RegisterValues) => {
     try{
@@ -109,9 +111,11 @@ export default function RegisterScreen({
           <View style={styles.card}>
             <Text style={styles.title}>Crie sua conta</Text>
             <Text style={styles.subtitle}>Comece a ter uma visão mais clara da sua vida financeira.</Text>
+            <Text style={styles.demoNotice}>Demonstração acadêmica: seus dados ficam apenas na memória desta execução. Não use uma senha real.</Text>
 
             <Formik
               initialValues={initialValues}
+              validateOnMount
               validationSchema={registerSchema}
               onSubmit={handleRegister}
             >
@@ -121,6 +125,7 @@ export default function RegisterScreen({
                 handleChange,
                 handleSubmit,
                 isValid,
+                isValidating,
                 setFieldTouched,
                 setFieldValue,
                 touched,
@@ -183,34 +188,37 @@ export default function RegisterScreen({
                   <View>
                     <Pressable
                       accessibilityRole="checkbox"
-                      accessibilityState={{ checked: values.acceptedTerms }}
+                      accessibilityLabel="Entendo que esta demonstração não persiste meus dados nem conecta serviços financeiros"
+                      accessibilityState={{ checked: values.understoodDemo }}
                       onPress={() => {
-                        setFieldValue('acceptedTerms', !values.acceptedTerms);
-                        setFieldTouched('acceptedTerms', true, false);
+                        setFieldValue('understoodDemo', !values.understoodDemo);
+                        setFieldTouched('understoodDemo', true, false);
                       }}
                       style={styles.termsRow}
                     >
-                      <View style={[styles.checkbox, values.acceptedTerms ? styles.checkboxChecked : undefined]}>
-                        {values.acceptedTerms ? <Text style={styles.checkboxMark}>✓</Text> : null}
+                      <View style={[styles.checkbox, values.understoodDemo ? styles.checkboxChecked : undefined]}>
+                        {values.understoodDemo ? <Text style={styles.checkboxMark}>✓</Text> : null}
                       </View>
                       <Text style={styles.termsText}>
-                        Li e aceito os <Text style={styles.termsLink}>Termos de Uso</Text> e a{' '}
-                        <Text style={styles.termsLink}>Política de Privacidade</Text>.
+                        Entendo que este aplicativo é uma demonstração acadêmica e não está conectado a serviços financeiros.
                       </Text>
                     </Pressable>
-                    {touched.acceptedTerms && errors.acceptedTerms ? (
-                      <Text accessibilityLiveRegion="polite" style={styles.errorText}>{errors.acceptedTerms}</Text>
+                    {touched.understoodDemo && errors.understoodDemo ? (
+                      <Text accessibilityLiveRegion="polite" style={styles.errorText}>{errors.understoodDemo}</Text>
                     ) : null}
                   </View>
 
                   <Pressable
                     accessibilityRole="button"
-                    disabled={!isValid}
+                    disabled={!isValid || isValidating}
+                    onFocus={() => setIsCreateFocused(true)}
+                    onBlur={() => setIsCreateFocused(false)}
                     onPress={() => handleSubmit()}
                     style={({ pressed }) => [
                       styles.createButton,
-                      !isValid ? styles.createButtonDisabled : undefined,
-                      pressed && isValid ? styles.buttonPressed : undefined,
+                      !isValid || isValidating ? styles.createButtonDisabled : undefined,
+                      pressed && isValid && !isValidating ? styles.buttonPressed : undefined,
+                      isCreateFocused ? styles.buttonFocused : undefined,
                     ]}
                   >
                     <Text style={styles.createButtonText}>Criar conta</Text>
@@ -221,7 +229,7 @@ export default function RegisterScreen({
 
             <View style={styles.loginRow}>
               <Text style={styles.loginText}>Já possui uma conta?</Text>
-              <Pressable accessibilityRole="link" onPress={onBackToLogin}>
+              <Pressable accessibilityRole="link" onPress={onBackToLogin} style={styles.loginLinkTarget}>
                 <Text style={styles.loginLink}> Entrar</Text>
               </Pressable>
             </View>
@@ -249,13 +257,16 @@ type FieldProps = {
 };
 
 function Field({ error, label, touched, ...inputProps }: FieldProps) {
+  const [focused, setFocused] = useState(false);
   return (
     <View>
       <Text style={styles.label}>{label}</Text>
       <TextInput
         {...inputProps}
+        onBlur={(event) => { setFocused(false); inputProps.onBlur(event); }}
+        onFocus={() => setFocused(true)}
         placeholderTextColor={colors.muted}
-        style={[styles.input, touched && error ? styles.inputError : undefined]}
+        style={[styles.input, focused ? styles.inputFocused : undefined, touched && error ? styles.inputError : undefined]}
       />
       {touched && error ? <Text accessibilityLiveRegion="polite" style={styles.errorText}>{error}</Text> : null}
     </View>
@@ -287,15 +298,17 @@ function PasswordField({
   touched,
   value,
 }: PasswordFieldProps) {
+  const [focused, setFocused] = useState(false);
   return (
     <View>
       <Text style={styles.label}>{label}</Text>
-      <View style={[styles.passwordContainer, touched && error ? styles.inputError : undefined]}>
+      <View style={[styles.passwordContainer, focused ? styles.inputFocused : undefined, touched && error ? styles.inputError : undefined]}>
         <TextInput
           accessibilityLabel={label}
           autoComplete="new-password"
-          onBlur={onBlur}
+          onBlur={(event) => { setFocused(false); onBlur(event); }}
           onChangeText={onChangeText}
+          onFocus={() => setFocused(true)}
           onSubmitEditing={onSubmitEditing}
           placeholder={placeholder}
           placeholderTextColor={colors.muted}
@@ -331,28 +344,31 @@ const styles = StyleSheet.create({
   brandCurrency: { color: colors.green, fontSize: 16, fontWeight: '800' },
   brandName: { color: colors.white, fontSize: 30, fontWeight: '800', letterSpacing: 2 },
   card: { backgroundColor: colors.white, borderRadius: 24, padding: 24 },
-  title: { color: colors.navy, fontSize: 28, fontWeight: '800' },
-  subtitle: { color: colors.muted, fontSize: 15, lineHeight: 22, marginTop: 8 },
+  title: { color: colors.navy, fontSize: typography.size.screenTitle, fontWeight: typography.weight.extraBold, lineHeight: typography.lineHeight.screenTitle },
+  subtitle: { color: colors.muted, fontSize: typography.size.body, lineHeight: typography.lineHeight.body, marginTop: 8 },
   form: { gap: 18, marginTop: 28 },
-  label: { color: colors.navy, fontSize: 14, fontWeight: '700', marginBottom: 8 },
-  input: { borderColor: colors.border, borderRadius: 12, borderWidth: 1, color: colors.navy, fontSize: 16, height: 52, paddingHorizontal: 16 },
+  label: { color: colors.navy, fontSize: typography.size.label, fontWeight: typography.weight.bold, marginBottom: 8 },
+  input: { borderColor: colors.border, borderRadius: 12, borderWidth: 1, color: colors.navy, fontSize: typography.size.body, height: 52, paddingHorizontal: 16 },
   passwordContainer: { alignItems: 'center', borderColor: colors.border, borderRadius: 12, borderWidth: 1, flexDirection: 'row', height: 52 },
-  passwordInput: { color: colors.navy, flex: 1, fontSize: 16, height: '100%', paddingHorizontal: 16 },
+  passwordInput: { color: colors.navy, flex: 1, fontSize: typography.size.body, height: '100%', paddingHorizontal: 16 },
   visibilityButton: { justifyContent: 'center', minHeight: 44, paddingHorizontal: 14 },
   visibilityText: { color: colors.darkGreen, fontSize: 13, fontWeight: '700' },
-  termsRow: { alignItems: 'flex-start', flexDirection: 'row', gap: 10 },
+  termsRow: { alignItems: 'flex-start', flexDirection: 'row', gap: 10, minHeight: 44 },
   checkbox: { alignItems: 'center', borderColor: colors.border, borderRadius: 5, borderWidth: 1.5, height: 22, justifyContent: 'center', marginTop: 1, width: 22 },
   checkboxChecked: { backgroundColor: colors.green, borderColor: colors.green },
   checkboxMark: { color: colors.white, fontSize: 15, fontWeight: '800' },
   termsText: { color: colors.muted, flex: 1, fontSize: 13, lineHeight: 20 },
-  termsLink: { color: colors.darkGreen, fontWeight: '800' },
   inputError: { borderColor: colors.danger },
+  inputFocused: { borderColor: colors.darkGreen, borderWidth: 2 },
   errorText: { color: colors.danger, fontSize: 12, marginTop: 6 },
-  createButton: { alignItems: 'center', backgroundColor: colors.green, borderRadius: 12, justifyContent: 'center', minHeight: 54, marginTop: 2 },
-  createButtonDisabled: { backgroundColor: '#86BFA0' },
+  createButton: { alignItems: 'center', backgroundColor: colors.darkGreen, borderRadius: 12, justifyContent: 'center', minHeight: 54, marginTop: 2 },
+  createButtonDisabled: { backgroundColor: '#64748B' },
   buttonPressed: { opacity: 0.86 },
+  buttonFocused: { borderColor: colors.green, borderWidth: 3 },
   createButtonText: { color: colors.white, fontSize: 16, fontWeight: '800' },
-  loginRow: { alignItems: 'center', flexDirection: 'row', justifyContent: 'center', marginTop: 26 },
+  loginRow: { alignItems: 'center', flexDirection: 'row', justifyContent: 'center', marginTop: 26, minHeight: 44 },
   loginText: { color: colors.muted, fontSize: 14 },
   loginLink: { color: colors.darkGreen, fontSize: 14, fontWeight: '800' },
+  loginLinkTarget: { alignItems: 'center', justifyContent: 'center', minHeight: 44, minWidth: 44 },
+  demoNotice: { color: '#78350F', backgroundColor: '#FEF3C7', borderRadius: 10, fontSize: 13, lineHeight: 19, marginTop: 14, padding: 12 },
 });

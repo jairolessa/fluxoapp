@@ -15,8 +15,10 @@ export default function PersonalizeNameRoute() {
     <PersonalizeNameScreen
       initialName={initialName ?? ''}
       onContinue={(preferredName) => {
-        if(resolvedUserId) mockAuthStore.setPreferredName(resolvedUserId, preferredName);
-        router.dismissTo({ pathname: '/'});
+        if (resolvedUserId) {
+          mockAuthStore.setPreferredName(resolvedUserId, preferredName);
+        }
+        router.replace({ pathname: '/home', params: { preferredName } });
       }}
     />
   );

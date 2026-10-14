@@ -1,15 +1,17 @@
 import { Formik } from 'formik';
+import { useState } from 'react';
 import { KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import * as Yup from 'yup';
+import { colors as themeColors, typography } from '../../theme/tokens';
 
 const colors = {
-  green: '#16A34A',
-  navy: '#0F172A',
-  white: '#FFFFFF',
-  muted: '#64748B',
-  danger: '#DC2626',
-  border: '#CBD5E1',
+  green: themeColors.brand,
+  navy: themeColors.navy,
+  white: themeColors.surface,
+  muted: themeColors.muted,
+  danger: themeColors.danger,
+  border: themeColors.border,
 };
 
 type PersonalizeNameScreenProps = {
@@ -29,6 +31,8 @@ const personalizeNameSchema = Yup.object({
 });
 
 export default function PersonalizeNameScreen({ initialName, onContinue }: PersonalizeNameScreenProps) {
+  const [isNameFocused, setIsNameFocused] = useState(false);
+  const [isContinueFocused, setIsContinueFocused] = useState(false);
   const initialValues: PersonalizeNameValues = { preferredName: initialName };
 
   const handleContinue = (values: PersonalizeNameValues) => {
@@ -56,10 +60,11 @@ export default function PersonalizeNameScreen({ initialName, onContinue }: Perso
             <Formik
               enableReinitialize
               initialValues={initialValues}
+              validateOnMount
               onSubmit={handleContinue}
               validationSchema={personalizeNameSchema}
             >
-              {({ errors, handleBlur, handleChange, handleSubmit, isValid, touched, values }) => (
+              {({ errors, handleBlur, handleChange, handleSubmit, isValid, isValidating, touched, values }) => (
                 <View style={styles.form}>
                   <View>
                     <Text style={styles.label}>Seu nome</Text>
@@ -67,13 +72,14 @@ export default function PersonalizeNameScreen({ initialName, onContinue }: Perso
                       accessibilityLabel="Como você quer ser chamado"
                       autoCapitalize="words"
                       autoComplete="name"
-                      onBlur={handleBlur('preferredName')}
+                      onBlur={(event) => { setIsNameFocused(false); handleBlur('preferredName')(event); }}
                       onChangeText={handleChange('preferredName')}
+                      onFocus={() => setIsNameFocused(true)}
                       onSubmitEditing={() => handleSubmit()}
                       placeholder="Seu nome"
                       placeholderTextColor={colors.muted}
                       returnKeyType="done"
-                      style={[styles.input, touched.preferredName && errors.preferredName ? styles.inputError : undefined]}
+                      style={[styles.input, isNameFocused ? styles.inputFocused : undefined, touched.preferredName && errors.preferredName ? styles.inputError : undefined]}
                       textContentType="givenName"
                       value={values.preferredName}
                     />
@@ -84,12 +90,15 @@ export default function PersonalizeNameScreen({ initialName, onContinue }: Perso
 
                   <Pressable
                     accessibilityRole="button"
-                    disabled={!isValid}
+                    disabled={!isValid || isValidating}
+                    onFocus={() => setIsContinueFocused(true)}
+                    onBlur={() => setIsContinueFocused(false)}
                     onPress={() => handleSubmit()}
                     style={({ pressed }) => [
                       styles.continueButton,
-                      !isValid ? styles.continueButtonDisabled : undefined,
-                      pressed && isValid ? styles.buttonPressed : undefined,
+                      !isValid || isValidating ? styles.continueButtonDisabled : undefined,
+                      pressed && isValid && !isValidating ? styles.buttonPressed : undefined,
+                      isContinueFocused ? styles.buttonFocused : undefined,
                     ]}
                   >
                     <Text style={styles.continueButtonText}>Continuar</Text>
@@ -113,15 +122,17 @@ const styles = StyleSheet.create({
   brandCurrency: { color: colors.green, fontSize: 16, fontWeight: '800' },
   brandName: { color: colors.white, fontSize: 30, fontWeight: '800', letterSpacing: 2 },
   card: { backgroundColor: colors.white, borderRadius: 24, padding: 24 },
-  title: { color: colors.navy, fontSize: 28, fontWeight: '800', lineHeight: 35 },
-  subtitle: { color: colors.muted, fontSize: 15, lineHeight: 22, marginTop: 8 },
+  title: { color: colors.navy, fontSize: typography.size.screenTitle, fontWeight: typography.weight.extraBold, lineHeight: typography.lineHeight.screenTitle },
+  subtitle: { color: colors.muted, fontSize: typography.size.body, lineHeight: typography.lineHeight.body, marginTop: 8 },
   form: { gap: 24, marginTop: 32 },
-  label: { color: colors.navy, fontSize: 14, fontWeight: '700', marginBottom: 8 },
-  input: { borderColor: colors.border, borderRadius: 12, borderWidth: 1, color: colors.navy, fontSize: 16, height: 52, paddingHorizontal: 16 },
+  label: { color: colors.navy, fontSize: typography.size.label, fontWeight: typography.weight.bold, marginBottom: 8 },
+  input: { borderColor: colors.border, borderRadius: 12, borderWidth: 1, color: colors.navy, fontSize: typography.size.body, height: 52, paddingHorizontal: 16 },
   inputError: { borderColor: colors.danger },
+  inputFocused: { borderColor: themeColors.primary, borderWidth: 2 },
   errorText: { color: colors.danger, fontSize: 12, marginTop: 6 },
-  continueButton: { alignItems: 'center', backgroundColor: colors.green, borderRadius: 12, justifyContent: 'center', minHeight: 54 },
-  continueButtonDisabled: { backgroundColor: '#86BFA0' },
+  continueButton: { alignItems: 'center', backgroundColor: themeColors.primary, borderRadius: 12, justifyContent: 'center', minHeight: 54 },
+  continueButtonDisabled: { backgroundColor: '#64748B' },
   buttonPressed: { opacity: 0.86 },
+  buttonFocused: { borderColor: themeColors.brand, borderWidth: 3 },
   continueButtonText: { color: colors.white, fontSize: 16, fontWeight: '800' },
 });

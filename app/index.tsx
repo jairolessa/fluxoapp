@@ -8,10 +8,10 @@ export default function LoginRoute() {
     <LoginScreen 
       onCreateAccount={() => router.push('/register')}
       onLoginSuccess={(user) => {
-        const [fallbackFirtName] = user.fullName.trim().split(/\s+/);
+        const [fallbackFirstName] = user.fullName.trim().split(/\s+/);
         router.replace({
           pathname: '/home',
-          params: { preferredName: user.preferredName ?? fallbackFirtName },
+          params: { preferredName: user.preferredName ?? fallbackFirstName },
         });
       }}
     />

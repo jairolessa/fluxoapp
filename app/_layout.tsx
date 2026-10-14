@@ -11,6 +11,9 @@ export default function RootLayout() {
         <Stack.Screen name="register" />
         <Stack.Screen name="personalize-name" />
         <Stack.Screen name="home" />
+        <Stack.Screen name="extrato" />
+        <Stack.Screen name="transacao/[id]" />
+        <Stack.Screen name="transacao/[id]/categoria" />
       </Stack>
     </SafeAreaProvider>
   );
