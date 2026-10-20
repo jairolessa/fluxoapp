@@ -1,24 +1,18 @@
-import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useRouter } from 'expo-router';
+import { useSession } from '../src/context/SessionContext';
 import PersonalizeNameScreen from '../src/screens/personalize-name/personalize-name-screen';
-import { mockAuthStore } from '../src/services/mockAuthStore';
 
 export default function PersonalizeNameRoute() {
   const router = useRouter();
-  const { firstName, userId } = useLocalSearchParams<{ 
-    firstName?: string | string[];
-    userId?: string | string[];
-  }>();
-  const initialName = Array.isArray(firstName) ? firstName[0] : firstName;
-  const resolvedUserId = Array.isArray(userId) ? userId[0] : userId;
+  const { user, updatePreferredName } = useSession();
+  const [firstName] = (user?.fullName ?? '').trim().split(/\s+/);
 
   return (
     <PersonalizeNameScreen
-      initialName={initialName ?? ''}
-      onContinue={(preferredName) => {
-        if (resolvedUserId) {
-          mockAuthStore.setPreferredName(resolvedUserId, preferredName);
-        }
-        router.replace({ pathname: '/home', params: { preferredName } });
+      initialName={user?.preferredName ?? firstName}
+      onContinue={async (preferredName) => {
+        await updatePreferredName(preferredName);
+        router.replace('/home');
       }}
     />
   );

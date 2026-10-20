@@ -12,6 +12,11 @@ export const colors = {
   noticeText: '#78350F',
   rowSurface: '#1E293B',
   disabled: '#64748B',
+  track: '#334155',
+  incomeOnDark: '#86EFAC',
+  expenseOnDark: '#FCA5A5',
+  warningOnDark: '#FCD34D',
+  accent: '#4ADE80',
 } as const;
 
 export const spacing = { xs: 4, sm: 8, md: 16, lg: 24, xl: 32 } as const;

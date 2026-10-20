@@ -1,16 +1,21 @@
 {
   "expo": {
-    "name": "fluxoapp",
+    "name": "Fluxo",
     "slug": "fluxoapp",
     "scheme": "fluxo",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "br.com.jairolessa.fluxo"
     },
     "android": {
+      "package": "br.com.jairolessa.fluxo",
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
@@ -29,6 +34,19 @@
           "image": "./assets/splash-icon.png",
           "resizeMode": "contain",
           "backgroundColor": "#ffffff"
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "cameraPermission": "O Fluxo usa a câmera para fotografar comprovantes das suas movimentações.",
+          "photosPermission": "O Fluxo acessa suas fotos para anexar comprovantes às movimentações."
+        }
+      ],
+      [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "O Fluxo usa sua localização para registrar onde cada movimentação aconteceu."
         }
       ]
     ]

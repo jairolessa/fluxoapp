@@ -1,19 +1,21 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useTransaction } from '../../../src/hooks/useTransactions';
 import TransactionCategoryScreen from '../../../src/screens/transaction-category/TransactionCategoryScreen';
-import { getDemoTransaction, updateDemoTransactionCategory } from '../../../src/services/mockDashboardData';
+import { transactionStore } from '../../../src/services/transactionStore';
 
 export default function TransactionCategoryRoute() {
   const router = useRouter();
   const params = useLocalSearchParams<{ id?: string | string[] }>();
   const rawId = Array.isArray(params.id) ? params.id[0] : params.id;
   const id = rawId?.slice(0, 80) ?? '';
-  const transaction = getDemoTransaction(id);
+  const { transaction, ready } = useTransaction(id);
 
   return (
     <TransactionCategoryScreen
-      transaction={transaction}
       onBack={() => (router.canGoBack() ? router.back() : router.replace({ pathname: '/transacao/[id]', params: { id } }))}
-      onSave={(category) => updateDemoTransactionCategory(id, category)}
+      onSave={(category) => transactionStore.updateCategory(id, category)}
+      ready={ready}
+      transaction={transaction}
     />
   );
 }
