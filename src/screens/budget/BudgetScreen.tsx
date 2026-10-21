@@ -1,7 +1,8 @@
 import { useMemo } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
+import PrimaryButton from '../../components/PrimaryButton';
 import Screen, { screenStyles as shared } from '../../components/Screen';
-import { BUDGET_STATUS_LABEL, buildInsight, BudgetStatus, CategorySpending, formatCurrency, formatMonthYear, spendingByCategory, Transaction } from '../../domain/finance';
+import { BUDGET_STATUS_LABEL, buildInsight, BudgetLimits, BudgetStatus, CategorySpending, formatCurrency, formatMonthYear, spendingByCategory, Transaction } from '../../domain/finance';
 import { colors, radii, spacing, typography } from '../../theme/tokens';
 
 const BAR_COLOR: Record<BudgetStatus, string> = {
@@ -12,7 +13,10 @@ const BAR_COLOR: Record<BudgetStatus, string> = {
 
 type BudgetScreenProps = {
   transactions: Transaction[];
+  limits: BudgetLimits;
+  configured: boolean;
   onBack: () => void;
+  onEdit: () => void;
 };
 
 function CategoryRow({ item }: { item: CategorySpending }) {
@@ -35,16 +39,18 @@ function CategoryRow({ item }: { item: CategorySpending }) {
   );
 }
 
-export default function BudgetScreen({ transactions, onBack }: BudgetScreenProps) {
+export default function BudgetScreen({ transactions, limits, configured, onBack, onEdit }: BudgetScreenProps) {
   const { spending, insight, month } = useMemo(() => {
     const now = Date.now();
-    const byCategory = spendingByCategory(transactions, now);
+    const byCategory = spendingByCategory(transactions, now, limits);
     return { spending: byCategory, insight: buildInsight(byCategory), month: formatMonthYear(now) };
-  }, [transactions]);
+  }, [transactions, limits]);
 
   return (
     <Screen onBack={onBack} title="Orçamento">
       <Text style={shared.body}>{month}</Text>
+      <PrimaryButton label={configured ? 'Editar limites' : 'Definir meus limites'} onPress={onEdit} style={styles.editButton} />
+      {configured ? null : <Text style={styles.hint}>Estes são limites sugeridos. Defina os seus para acompanhar o mês com precisão.</Text>}
       <View style={styles.insight}>
         <Text style={styles.insightText}>{insight}</Text>
       </View>
@@ -56,6 +62,8 @@ export default function BudgetScreen({ transactions, onBack }: BudgetScreenProps
 }
 
 const styles = StyleSheet.create({
+  editButton: { marginTop: spacing.md },
+  hint: { color: colors.mutedOnDark, fontSize: typography.size.caption, lineHeight: typography.lineHeight.caption, marginTop: spacing.sm },
   insight: { backgroundColor: colors.rowSurface, borderLeftColor: colors.accent, borderLeftWidth: 4, borderRadius: radii.control, marginBottom: spacing.sm, marginTop: spacing.md, padding: spacing.md },
   insightText: { color: colors.surface, fontSize: typography.size.body, lineHeight: typography.lineHeight.body },
   row: { backgroundColor: colors.rowSurface, borderRadius: radii.control, marginTop: spacing.sm, padding: spacing.md },

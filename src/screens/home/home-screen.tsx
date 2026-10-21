@@ -3,7 +3,7 @@ import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View } from
 import { SafeAreaView } from 'react-native-safe-area-context';
 import PrimaryButton from '../../components/PrimaryButton';
 import TransactionListItem from '../../components/TransactionListItem';
-import { buildInsight, formatCurrency, spendingByCategory, summarize, Transaction } from '../../domain/finance';
+import { BudgetLimits, buildInsight, formatCurrency, spendingByCategory, summarize, Transaction } from '../../domain/finance';
 import { colors, minTouchTarget, radii, spacing, typography } from '../../theme/tokens';
 
 const RECENT_COUNT = 5;
@@ -11,6 +11,7 @@ const RECENT_COUNT = 5;
 type HomeScreenProps = {
   preferredName: string;
   transactions: Transaction[];
+  limits: BudgetLimits;
   ready: boolean;
   onNewTransaction: () => void;
   onOpenBudget: () => void;
@@ -18,13 +19,13 @@ type HomeScreenProps = {
   onOpenTransaction: (id: string) => void;
 };
 
-export default function HomeScreen({ preferredName, transactions, ready, onNewTransaction, onOpenBudget, onOpenStatement, onOpenTransaction }: HomeScreenProps) {
+export default function HomeScreen({ preferredName, transactions, limits, ready, onNewTransaction, onOpenBudget, onOpenStatement, onOpenTransaction }: HomeScreenProps) {
   const greetingName = preferredName || 'você';
 
   const { summary, insight } = useMemo(() => {
     const now = Date.now();
-    return { summary: summarize(transactions, now), insight: buildInsight(spendingByCategory(transactions, now)) };
-  }, [transactions]);
+    return { summary: summarize(transactions, now), insight: buildInsight(spendingByCategory(transactions, now, limits)) };
+  }, [transactions, limits]);
 
   return (
     <SafeAreaView edges={['top']} style={styles.safeArea}>

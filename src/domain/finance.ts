@@ -26,8 +26,10 @@ export function categoriesFor(type: TransactionType): readonly string[] {
   return type === 'income' ? INCOME_CATEGORIES : EXPENSE_CATEGORIES;
 }
 
-// Monthly spending limits per expense category, in cents.
-export const BUDGET_LIMITS_IN_CENTS: Readonly<Record<string, number>> = {
+export type BudgetLimits = Readonly<Record<string, number>>;
+
+// Suggested monthly limits per expense category, in cents, until the user sets their own.
+export const DEFAULT_BUDGET_LIMITS_IN_CENTS: BudgetLimits = {
   Alimentação: 150000,
   Moradia: 180000,
   Mobilidade: 40000,
@@ -87,7 +89,11 @@ export type CategorySpending = {
   status: BudgetStatus;
 };
 
-export function spendingByCategory(transactions: readonly Transaction[], now: number): CategorySpending[] {
+export function spendingByCategory(
+  transactions: readonly Transaction[],
+  now: number,
+  limits: BudgetLimits = DEFAULT_BUDGET_LIMITS_IN_CENTS,
+): CategorySpending[] {
   const spent = new Map<string, number>();
   for (const transaction of transactions) {
     if (transaction.type !== 'expense' || !isSameMonth(transaction.occurredAt, now)) continue;
@@ -97,7 +103,7 @@ export function spendingByCategory(transactions: readonly Transaction[], now: nu
   return [...categories]
     .map((category) => {
       const spentInCents = spent.get(category) ?? 0;
-      const limitInCents = BUDGET_LIMITS_IN_CENTS[category] ?? BUDGET_LIMITS_IN_CENTS.Outros;
+      const limitInCents = limits[category] ?? limits.Outros ?? DEFAULT_BUDGET_LIMITS_IN_CENTS.Outros;
       return { category, spentInCents, limitInCents, status: budgetStatus(spentInCents, limitInCents) };
     })
     .sort((a, b) => b.spentInCents - a.spentInCents);

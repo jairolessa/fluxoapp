@@ -1,5 +1,6 @@
 import { createContext, ReactNode, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { authStore, User } from '../services/authStore';
+import { budgetStore } from '../services/budgetStore';
 import { transactionStore } from '../services/transactionStore';
 
 type SessionValue = {
@@ -33,8 +34,13 @@ export function SessionProvider({ children }: { children: ReactNode }) {
 
   const userId = user?.id ?? null;
   useEffect(() => {
-    if (userId) void transactionStore.load(userId);
-    else transactionStore.unload();
+    if (userId) {
+      void transactionStore.load(userId);
+      void budgetStore.load(userId);
+    } else {
+      transactionStore.unload();
+      budgetStore.unload();
+    }
   }, [userId]);
 
   const signIn = useCallback(async (email: string, password: string) => {
