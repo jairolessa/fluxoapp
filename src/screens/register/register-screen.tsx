@@ -14,7 +14,6 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import * as Yup from 'yup';
-import { mockAuthStore } from '../../services/mockAuthStore';
 import { colors as themeColors, typography } from '../../theme/tokens';
 
 const colors = {
@@ -32,12 +31,12 @@ type RegisterValues = {
   email: string;
   password: string;
   confirmPassword: string;
-  understoodDemo: boolean;
+  acceptedTerms: boolean;
 };
 
 type RegisterScreenProps = {
   onBackToLogin: () => void;
-  onRegistrationComplete: (fullName: string, userId: string) => void;
+  onSubmit: (fullName: string, email: string, password: string) => Promise<void>;
 };
 
 const initialValues: RegisterValues = {
@@ -45,7 +44,7 @@ const initialValues: RegisterValues = {
   email: '',
   password: '',
   confirmPassword: '',
-  understoodDemo: false,
+  acceptedTerms: false,
 };
 
 const registerSchema = Yup.object({
@@ -63,25 +62,24 @@ const registerSchema = Yup.object({
   confirmPassword: Yup.string()
     .oneOf([Yup.ref('password')], 'As senhas devem ser iguais.')
     .required('Confirme sua senha.'),
-  understoodDemo: Yup.boolean()
-    .oneOf([true], 'Confirme que entendeu os limites da demonstração.')
-    .required('Confirme que entendeu os limites da demonstração.'),
+  acceptedTerms: Yup.boolean()
+    .oneOf([true], 'Aceite os termos de uso para continuar.')
+    .required('Aceite os termos de uso para continuar.'),
 });
 
 export default function RegisterScreen({
   onBackToLogin,
-  onRegistrationComplete,
+  onSubmit,
 }: RegisterScreenProps) {
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const [isConfirmationVisible, setIsConfirmationVisible] = useState(false);
   const [isCreateFocused, setIsCreateFocused] = useState(false);
 
-  const handleRegister = (values: RegisterValues) => {
-    try{
-      const user = mockAuthStore.register(values.fullName, values.email, values.password)
-      onRegistrationComplete(values.fullName, user.id);
-    } catch(err){
-      Alert.alert('Não foi possível criar a conta', (err as Error).message);
+  const handleRegister = async (values: RegisterValues) => {
+    try {
+      await onSubmit(values.fullName, values.email, values.password);
+    } catch (err) {
+      Alert.alert('Não foi possível criar a conta', err instanceof Error ? err.message : 'Tente novamente.');
     }
   };
 
@@ -111,7 +109,6 @@ export default function RegisterScreen({
           <View style={styles.card}>
             <Text style={styles.title}>Crie sua conta</Text>
             <Text style={styles.subtitle}>Comece a ter uma visão mais clara da sua vida financeira.</Text>
-            <Text style={styles.demoNotice}>Demonstração acadêmica: seus dados ficam apenas na memória desta execução. Não use uma senha real.</Text>
 
             <Formik
               initialValues={initialValues}
@@ -188,23 +185,23 @@ export default function RegisterScreen({
                   <View>
                     <Pressable
                       accessibilityRole="checkbox"
-                      accessibilityLabel="Entendo que esta demonstração não persiste meus dados nem conecta serviços financeiros"
-                      accessibilityState={{ checked: values.understoodDemo }}
+                      accessibilityLabel="Li e aceito os termos de uso e a política de privacidade"
+                      accessibilityState={{ checked: values.acceptedTerms }}
                       onPress={() => {
-                        setFieldValue('understoodDemo', !values.understoodDemo);
-                        setFieldTouched('understoodDemo', true, false);
+                        setFieldValue('acceptedTerms', !values.acceptedTerms);
+                        setFieldTouched('acceptedTerms', true, false);
                       }}
                       style={styles.termsRow}
                     >
-                      <View style={[styles.checkbox, values.understoodDemo ? styles.checkboxChecked : undefined]}>
-                        {values.understoodDemo ? <Text style={styles.checkboxMark}>✓</Text> : null}
+                      <View style={[styles.checkbox, values.acceptedTerms ? styles.checkboxChecked : undefined]}>
+                        {values.acceptedTerms ? <Text style={styles.checkboxMark}>✓</Text> : null}
                       </View>
                       <Text style={styles.termsText}>
-                        Entendo que este aplicativo é uma demonstração acadêmica e não está conectado a serviços financeiros.
+                        Li e aceito os termos de uso e a política de privacidade.
                       </Text>
                     </Pressable>
-                    {touched.understoodDemo && errors.understoodDemo ? (
-                      <Text accessibilityLiveRegion="polite" style={styles.errorText}>{errors.understoodDemo}</Text>
+                    {touched.acceptedTerms && errors.acceptedTerms ? (
+                      <Text accessibilityLiveRegion="polite" style={styles.errorText}>{errors.acceptedTerms}</Text>
                     ) : null}
                   </View>
 
@@ -370,5 +367,4 @@ const styles = StyleSheet.create({
   loginText: { color: colors.muted, fontSize: 14 },
   loginLink: { color: colors.darkGreen, fontSize: 14, fontWeight: '800' },
   loginLinkTarget: { alignItems: 'center', justifyContent: 'center', minHeight: 44, minWidth: 44 },
-  demoNotice: { color: '#78350F', backgroundColor: '#FEF3C7', borderRadius: 10, fontSize: 13, lineHeight: 19, marginTop: 14, padding: 12 },
 });

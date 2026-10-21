@@ -13,7 +13,6 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import * as Yup from 'yup';
-import { mockAuthStore } from '../../services/mockAuthStore';
 import { colors as themeColors, typography } from '../../theme/tokens';
 
 const colors = {
@@ -47,24 +46,20 @@ const loginSchema = Yup.object({
 });
 
 type LoginScreenProps = {
+  onSubmit: (email: string, password: string) => Promise<void>;
   onCreateAccount: () => void;
-  onLoginSuccess: (user: { id: string; fullName: string; preferredName?: string }) => void;
+  onForgotPassword: () => void;
 };
 
-export default function LoginScreen({ onCreateAccount, onLoginSuccess }: LoginScreenProps) {
+export default function LoginScreen({ onSubmit, onCreateAccount, onForgotPassword }: LoginScreenProps) {
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const [focusedField, setFocusedField] = useState<'email' | 'password' | 'submit' | 'signup' | 'forgot' | null>(null);
 
-  const showUnavailableAction = (title: string) => {
-    Alert.alert(title, 'Esta funcionalidade será disponibilizada em breve.');
-  };
-
-  const handleLogin = (values: LoginValues) => {
-    try{
-      const user = mockAuthStore.login(values.email, values.password);
-      onLoginSuccess(user);
-    } catch(err) {
-      Alert.alert('Não foi possível entrar', (err as Error).message);
+  const handleLogin = async (values: LoginValues) => {
+    try {
+      await onSubmit(values.email, values.password);
+    } catch (err) {
+      Alert.alert('Não foi possível entrar', err instanceof Error ? err.message : 'Tente novamente.');
     }
   };
 
@@ -168,7 +163,7 @@ export default function LoginScreen({ onCreateAccount, onLoginSuccess }: LoginSc
                     accessibilityRole="link"
                     onFocus={() => setFocusedField('forgot')}
                     onBlur={() => setFocusedField(null)}
-                    onPress={() => showUnavailableAction('Redefinir senha')}
+                    onPress={onForgotPassword}
                     style={({ pressed }) => [styles.forgotPasswordButton, focusedField === 'forgot' ? styles.linkFocused : undefined, pressed ? styles.buttonPressed : undefined]}
                   >
                     <Text style={styles.forgotPasswordText}>Esqueci minha senha</Text>
@@ -206,8 +201,6 @@ export default function LoginScreen({ onCreateAccount, onLoginSuccess }: LoginSc
               </Pressable>
             </View>
           </View>
-
-          <Text style={styles.securityNote}>Autenticação simulada: contas e senhas existem apenas durante esta execução e são apagadas ao reiniciar o app. Não use uma senha real.</Text>
         </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>
@@ -261,5 +254,4 @@ const styles = StyleSheet.create({
   signupLink: { color: colors.darkGreen, fontSize: 14, fontWeight: '800' },
   signupLinkTarget: { alignItems: 'center', justifyContent: 'center', minHeight: 44, minWidth: 44 },
   linkFocused: { borderColor: colors.green, borderRadius: 6, borderWidth: 2 },
-  securityNote: { color: '#CBD5E1', fontSize: 12, lineHeight: 18, marginTop: 24, textAlign: 'center' },
 });
