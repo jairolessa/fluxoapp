@@ -12,7 +12,7 @@ export default function TransactionDetailRoute() {
   return (
     <TransactionDetailScreen
       onBack={() => (router.canGoBack() ? router.back() : router.replace('/extrato'))}
-      onChangeCategory={() => router.push({ pathname: '/transacao/[id]/categoria', params: { id } })}
+      onChangeCategory={() => router.push({ pathname: '/transaction/[id]/category', params: { id } })}
       ready={ready}
       transaction={transaction}
     />

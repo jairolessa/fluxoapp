@@ -9,7 +9,7 @@ export default function StatementRoute() {
   return (
     <StatementScreen
       onNewTransaction={() => router.navigate('/nova')}
-      onOpenTransaction={(id) => router.push({ pathname: '/transacao/[id]', params: { id } })}
+      onOpenTransaction={(id) => router.push({ pathname: '/transaction/[id]', params: { id } })}
       ready={ready}
       transactions={transactions}
     />

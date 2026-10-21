@@ -12,7 +12,7 @@ export default function TransactionCategoryRoute() {
 
   return (
     <TransactionCategoryScreen
-      onBack={() => (router.canGoBack() ? router.back() : router.replace({ pathname: '/transacao/[id]', params: { id } }))}
+      onBack={() => (router.canGoBack() ? router.back() : router.replace({ pathname: '/transaction/[id]', params: { id } }))}
       onSave={(category) => transactionStore.updateCategory(id, category)}
       ready={ready}
       transaction={transaction}

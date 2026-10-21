@@ -42,8 +42,8 @@ function RootNavigator() {
       <Stack.Screen name="(tabs)" />
       <Stack.Screen name="orcamento" />
       <Stack.Screen name="orcamento-editar" />
-      <Stack.Screen name="transacao/[id]" />
-      <Stack.Screen name="transacao/[id]/categoria" />
+      <Stack.Screen name="transaction/[id]" />
+      <Stack.Screen name="transaction/[id]/category" />
     </Stack>
   );
 }

@@ -17,7 +17,7 @@ export default function HomeRoute() {
       onNewTransaction={() => router.navigate('/nova')}
       onOpenBudget={() => router.push('/orcamento')}
       onOpenStatement={() => router.navigate('/extrato')}
-      onOpenTransaction={(id) => router.push({ pathname: '/transacao/[id]', params: { id } })}
+      onOpenTransaction={(id) => router.push({ pathname: '/transaction/[id]', params: { id } })}
       preferredName={user?.preferredName ?? firstName}
       ready={ready}
       transactions={transactions}
