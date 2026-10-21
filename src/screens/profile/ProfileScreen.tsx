@@ -12,10 +12,11 @@ type ProfileScreenProps = {
   appVersion: string;
   updateId: string | null;
   onChangeName: () => void;
+  onOpenBudget: () => void;
   onSignOut: () => void;
 };
 
-export default function ProfileScreen({ fullName, email, preferredName, connection, appVersion, updateId, onChangeName, onSignOut }: ProfileScreenProps) {
+export default function ProfileScreen({ fullName, email, preferredName, connection, appVersion, updateId, onChangeName, onOpenBudget, onSignOut }: ProfileScreenProps) {
   const confirmSignOut = () => {
     Alert.alert('Sair da conta', 'Você precisará entrar novamente para ver suas movimentações.', [
       { text: 'Cancelar', style: 'cancel' },
@@ -40,6 +41,12 @@ export default function ProfileScreen({ fullName, email, preferredName, connecti
           <Text style={shared.value}>{preferredName || '—'}</Text>
         </View>
         <PrimaryButton label="Alterar nome de exibição" onPress={onChangeName} variant="secondary" />
+      </View>
+
+      <Text accessibilityRole="header" style={shared.sectionTitle}>Orçamento</Text>
+      <View style={[shared.card, shared.stack]}>
+        <Text style={styles.cardText}>Defina quanto pretende gastar por mês em cada categoria e acompanhe o uso dos limites.</Text>
+        <PrimaryButton label="Ver e editar orçamento" onPress={onOpenBudget} variant="secondary" />
       </View>
 
       <Text accessibilityRole="header" style={shared.sectionTitle}>Conexão</Text>
@@ -73,6 +80,7 @@ const styles = StyleSheet.create({
   identityText: { flex: 1 },
   avatar: { alignItems: 'center', backgroundColor: colors.primary, borderRadius: 28, height: 56, justifyContent: 'center', width: 56 },
   avatarText: { color: colors.surface, fontSize: 22, fontWeight: '800' },
+  cardText: { color: colors.muted, fontSize: 15, lineHeight: 22 },
   connectionRow: { alignItems: 'center', flexDirection: 'row', gap: spacing.md },
   dot: { borderRadius: 7, height: 14, width: 14 },
   dotOnline: { backgroundColor: colors.brand },

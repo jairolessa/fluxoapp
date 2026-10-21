@@ -19,6 +19,7 @@ export default function ProfileRoute() {
       email={user.email}
       fullName={user.fullName}
       onChangeName={() => router.push('/personalize-name')}
+      onOpenBudget={() => router.push('/orcamento')}
       onSignOut={() => void signOut()}
       preferredName={user.preferredName ?? ''}
       updateId={Updates.updateId}
