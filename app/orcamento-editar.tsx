@@ -7,7 +7,6 @@ export default function BudgetEditRoute() {
   const router = useRouter();
   const { limits, configured, ready } = useBudget();
 
-  // Wait for the stored budget so the form never starts from stale suggested values.
   if (!ready) return null;
 
   return (

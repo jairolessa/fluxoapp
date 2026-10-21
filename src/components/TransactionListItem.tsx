@@ -36,7 +36,6 @@ function TransactionListItem({ transaction, onPress }: TransactionListItemProps)
   );
 }
 
-// memo keeps FlatList rows from re-rendering when only unrelated state (search, filter) changes.
 export default memo(TransactionListItem);
 
 const styles = StyleSheet.create({

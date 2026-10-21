@@ -38,7 +38,6 @@ function atNoon(monthsAgo: number, day: number, now: Date): number {
   return new Date(now.getFullYear(), now.getMonth() - monthsAgo, day, 12, 0, 0).getTime();
 }
 
-/** Initial history for a new account, relative to the current date and sorted newest first. */
 export function createInitialTransactions(nowMs: number): Transaction[] {
   const now = new Date(nowMs);
   const templates: SeedTemplate[] = [...extras];

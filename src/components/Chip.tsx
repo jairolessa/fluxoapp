@@ -7,7 +7,6 @@ type ChipProps = {
   onPress: () => void;
 };
 
-/** Single-choice pill used for filters and category pickers. */
 export default function Chip({ label, selected, onPress }: ChipProps) {
   return (
     <Pressable

@@ -8,7 +8,6 @@ type FormFieldProps = TextInputProps & {
   touched?: boolean;
 };
 
-/** Labelled text input for dark screens, with focus ring and an accessible inline error. */
 export default function FormField({ label, error, touched, onBlur, onFocus, style, ...inputProps }: FormFieldProps) {
   const [focused, setFocused] = useState(false);
   const showError = Boolean(touched && error);

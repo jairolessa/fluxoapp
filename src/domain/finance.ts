@@ -28,7 +28,6 @@ export function categoriesFor(type: TransactionType): readonly string[] {
 
 export type BudgetLimits = Readonly<Record<string, number>>;
 
-// Suggested monthly limits per expense category, in cents, until the user sets their own.
 export const DEFAULT_BUDGET_LIMITS_IN_CENTS: BudgetLimits = {
   Alimentação: 150000,
   Moradia: 180000,

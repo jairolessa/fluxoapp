@@ -7,12 +7,10 @@ import { SessionProvider, useSession } from '../src/context/SessionContext';
 import { colors } from '../src/theme/tokens';
 
 SplashScreen.preventAutoHideAsync().catch(() => {
-  // Hiding the splash is cosmetic; a failure here must not block the app from starting.
 });
 
 const AUTH_ROUTES = new Set(['register', 'forgot-password']);
 
-/** Keeps the visible stack consistent with the session: signed-out users see auth screens only. */
 function useAuthRedirect() {
   const { user, loading } = useSession();
   const segments = useSegments();

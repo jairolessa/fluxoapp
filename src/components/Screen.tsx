@@ -6,7 +6,6 @@ import { colors, interactions, minTouchTarget, spacing, typography } from '../th
 type ScreenProps = {
   title: string;
   onBack?: () => void;
-  /** Set to false when the content is a FlatList that scrolls by itself. */
   scroll?: boolean;
   children: ReactNode;
 };

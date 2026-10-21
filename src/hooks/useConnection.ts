@@ -12,7 +12,6 @@ const TYPE_LABEL: Partial<Record<Network.NetworkStateType, string>> = {
   [Network.NetworkStateType.VPN]: 'VPN',
 };
 
-/** Live connection status from the device (Wi-Fi, mobile data or offline). */
 export function useConnection(): ConnectionInfo {
   const state = Network.useNetworkState();
   const online = Boolean(state.isConnected) && state.isInternetReachable !== false;
