@@ -1,27 +1,32 @@
-# Matriz de iteração do protótipo Fluxo
+# Matriz de iteração do Fluxo
 
-**Base da avaliação:** inspeção estática das rotas e componentes implementados. Nesta rodada, `npx expo export --platform web` passou e as requisições locais da página inicial e do bundle retornaram HTTP 200. O Expo ainda exibiu `spawn EPERM` ao preparar React Native DevTools; a aba integrada do Codex expirou, portanto não houve inspeção interativa nem teste manual de navegação. Não foram realizados testes com usuários.
+Origem de cada linha: **H** = avaliação heurística ([documento](avaliacao-heuristica.md)); **A** = auditoria de acessibilidade; **R** = relato do autor; **U** = teste com usuários (ainda não aplicado). Validação refere-se ao build web.
 
-| ID | Tela / fluxo | Problema ou oportunidade | Evidência | Heurística | Gravidade | Solução | Status | Forma de validação |
-|---|---|---|---|---|---:|---|---|---|
-| I-01 | Cadastro → Personalização → Home; Home → Login | A personalização terminava de volta ao login e a home não oferecia saída. | Handlers usam `/home` após o nome e `replace` para sair da conta demonstrativa. | H3 | 2 inicial; 0 estática | Conclusão do nome abre home com saudação; logout demonstrativo retorna ao login. | Implementado; manual pendente | Inspeção das rotas/handlers; exercitar cadastro, retorno e logout em runtime. |
-| I-02 | Home → Extrato → Detalhes | Home não levava a uma tarefa financeira demonstrável nem havia itens navegáveis. | Home tem ação para extrato; lista no serviço tem quatro itens fictícios clicáveis para detalhes. | H1, H2, H6 | 2 inicial; 0 estática | Ligados home, extrato e detalhe por handlers de navegação. | Implementado; manual pendente | Código e bundle inspecionados; tocar em cada transição no app. |
-| I-03 | Detalhes da movimentação | Faltava contexto para examinar uma movimentação e tratar IDs inválidos. | Tela apresenta descrição, valor, data e categoria e contempla estado de ID não encontrado. | H6, H9 | 2 inicial; 0 estática | Adicionada tela de detalhes com retorno previsível e estado inválido explícito. | Implementado; manual pendente | Inspeção estática; abrir item válido e inválido em runtime. |
-| I-04 | Detalhes → Categoria → Confirmação | Faltava ação demonstrativa para alterar categoria e confirmar o resultado. | Opções atualizam o serviço em memória; salvar sem mudança é desabilitado; sucesso anunciado; `useSyncExternalStore` reflete mudança na lista/detalhe. | H1, H3, H5, H9 | 2 inicial; 0 estática | Adicionada edição demonstrativa, bloqueio de ação sem alteração e confirmação acessível. | Implementado; persistência em memória; manual pendente | Rastrear código/estado; trocar categoria, salvar e retornar para verificar reflexo. |
-| I-05 | Login e Cadastro | Dados demonstrativos poderiam parecer reais; botões podiam iniciar habilitados antes da validação; recuperação de senha não existe. | Formik valida na montagem, bloqueia submissão inválida/em validação e mostra erros junto aos campos; aviso da simulação e mensagem de indisponibilidade presentes. | H1, H5, H9 | 2 inicial; 1 estática | Identificados dados fictícios, validação inicial e estados de erro; indisponibilidade de recuperação comunicada. | Implementado no código; visual/leitor de tela pendente | Inspeção de regras/handlers; exercitar entradas válidas/inválidas e foco em runtime. |
-| I-06 | Componentes compartilhados e formulários | Repetição de estilo e contraste insuficiente no antigo botão primário. | `src/theme/tokens.ts` centraliza cor, tipografia, espaço, raios, alvos e estados; componentes compartilhados aplicam padrões. | H4, H8 | 2 inicial; 1 estática | Tokens e componentes `PrimaryButton`, `TransactionListItem`, `DemoPage`; botão primário `#166534`, com foco e pressionado visíveis. | Implementado; inspeção visual pendente | Contrastes calculados: 7,13:1; 4,76:1; 6,47:1; 8,15:1 para os pares registrados acima; revisar dispositivo. |
-| I-07 | Ações financeiras e formulários | Foco, nomes acessíveis e tamanho mínimo dos alvos precisavam ser explícitos. | Novos botões, opções e linhas expõem papel/estado acessível, foco/pressionado e altura mínima de 44 pontos; labels permanecem visíveis. | H4, H5 | 1 inicial; 1 pendente | Propriedades e estilos de foco/alvo implementados no código. | Verificado estaticamente; prática pendente | Inspecionar props/estilos; validar com teclado e TalkBack/VoiceOver em dispositivo. |
-| I-08 | Home, Extrato e Detalhes | Totais fixos não estavam vinculados à alteração de categoria e podiam ser confundidos com dados reais. | Dados estão organizados em serviço demonstrativo e identificados como fictícios; amostras fecham aritmeticamente; categorias mantidas no serviço. | H1, H2, H6 | 2 inicial; 0 estática | Dados fictícios centralizados e mutação de categoria em memória conectada à UI. | Implementado; sem persistência após reinício | Inspeção do conjunto de dados/serviço; conferir reflexo após edição e reinício manual. |
-| I-09 | Documentação das sete telas | Avaliação inicial não cobria o fluxo financeiro completo nem relacionava achados e iterações. | `avaliacao-heuristica.md` contém as dez heurísticas, evidências e limites de verificação; esta matriz relaciona achados às mudanças. | H1–H10 | 2 inicial; 1 estática | Relatório e matriz atualizados, distinguindo achados estáticos e validação prática pendente. | Documentação implementada | Revisão cruzada dos dois documentos; não representa teste de usuário. |
+| ID | Origem | Tela / fluxo | Problema | Decisão | Antes → depois | Validação |
+|---|---|---|---|---|---|---|
+| I-01 | H1 | Nova movimentação, orçamento, categoria | Sem confirmação visível de salvar; `Alert` não aparece na web | `NoticeHost` (✓/✕, região viva, 3,5 s) | alerta que some → aviso consistente no topo | e2e: aviso e `role=alert` presentes |
+| I-02 | H3 | Detalhes | Não era possível excluir lançamento | Botão "Excluir movimentação" + confirmação (`confirmAction`) | sem saída → reversível antes de executar | e2e: cancelar mantém, confirmar remove |
+| I-03 | H5 | Login, cadastro, nova, redefinir | Toque repetido durante envio | `PrimaryButton loading` (spinner, `busy`) | duplicável → bloqueado | e2e: fluxos concluem sem duplicar |
+| I-04 | H4 | Login, cadastro | Botão próprio, estados diferentes | Trocado por `PrimaryButton` | 2 estilos → 1 componente | inspeção + e2e login/cadastro |
+| I-05 | A | Cadastro | Checkbox `#16A34A` com 3,30:1 | `#166534` | 3,30 → 7,13:1 | script de contraste |
+| I-06 | A | Todos os campos escuros | Placeholder `#64748B`, 3,07:1 | `placeholderOnDark` | 3,07 → 5,71:1 | script de contraste |
+| I-07 | A | Campos e chips | Borda 1,72:1 e sem anel de foco nos chips | `fieldBorder` (3,07:1) + foco 3 px | borda fraca → visível | script + inspeção |
+| I-08 | R | Orçamento | Autor não conseguia editar orçamento | Atalho no Perfil + tela de edição | 1 entrada → 2 | e2e: edita e salva pelo Perfil |
+| I-09 | H9 | Formulários | Erro só por cor, sem anúncio | `role=alert` + ✕ no aviso | só cor → cor + símbolo + anúncio | inspeção |
+| I-10 | H7 | Extrato | Lista pesada | `FlatList` virtualizada, `memo`, busca sem acento | — | e2e: 37 linhas na 1ª janela, 44 no dado |
+| I-11 | H4 | Rotas | Nome em português (`transacao`) fora do padrão | Renomeado para `transaction` | inconsistente → padronizado | e2e + `tsc` |
+| U-01…U-n | U | A definir | Preencher após o Think Aloud | | | Reteste da tarefa afetada |
 
-## Inventário de telas
+## Ciclo aplicado
 
-1. Login (`/`).
-2. Cadastro (`/register`).
-3. Personalização (`/personalize-name`).
-4. Home (`/home`).
-5. Extrato (`/extrato`).
-6. Detalhes (`/transacao/[id]`).
-7. Categoria / confirmação (`/transacao/[id]/categoria`).
+```
+medir (heurística / auditoria / relato) → priorizar por severidade → corrigir → validar → registrar
+```
 
-As sete rotas estão implementadas e conectadas no código. Servidor e bundle responderam HTTP 200, mas a aba integrada expirou antes da inspeção visual; gestos, transições e alterações de estado seguem sem verificação manual em runtime.
+## Inventário das 12 telas
+
+Login, Cadastro, Redefinir senha, Nome de exibição, Início, Extrato, Nova movimentação, Perfil, Orçamento, Editar orçamento, Detalhes da movimentação, Categoria da movimentação.
+
+## Navegação
+
+Stack raiz (autenticação, detalhes, orçamento) e Tabs (Início, Extrato, Nova, Perfil), com redirecionamento por sessão.

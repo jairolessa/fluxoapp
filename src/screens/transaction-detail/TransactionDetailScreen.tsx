@@ -1,24 +1,26 @@
-import { Alert, Image, Linking, StyleSheet, Text, View } from 'react-native';
+import { Image, Linking, StyleSheet, Text, View } from 'react-native';
 import PrimaryButton from '../../components/PrimaryButton';
 import Screen, { screenStyles as styles } from '../../components/Screen';
 import { formatDate, formatSignedCurrency, Transaction } from '../../domain/finance';
 import { mapsUrl } from '../../services/device';
 import { colors, radii } from '../../theme/tokens';
+import { noticeStore } from '../../services/noticeStore';
 
 type TransactionDetailScreenProps = {
   transaction: Transaction | null;
   ready: boolean;
   onBack: () => void;
   onChangeCategory: () => void;
+  onDelete: () => void;
 };
 
-export default function TransactionDetailScreen({ transaction, ready, onBack, onChangeCategory }: TransactionDetailScreenProps) {
+export default function TransactionDetailScreen({ transaction, ready, onBack, onChangeCategory, onDelete }: TransactionDetailScreenProps) {
   const openMap = async () => {
     if (!transaction?.location) return;
     try {
       await Linking.openURL(mapsUrl(transaction.location));
     } catch {
-      Alert.alert('Mapa indisponível', 'Não foi possível abrir o mapa neste aparelho.');
+      noticeStore.show('Mapa indisponível. Não foi possível abrir o mapa neste aparelho.', 'error');
     }
   };
 
@@ -58,6 +60,7 @@ export default function TransactionDetailScreen({ transaction, ready, onBack, on
             </View>
           ) : null}
           <PrimaryButton label="Alterar categoria" onPress={onChangeCategory} />
+          <PrimaryButton accessibilityHint="Pede confirmação antes de excluir" label="Excluir movimentação" onPress={onDelete} variant="danger" />
         </View>
       ) : (
         <View style={[styles.card, styles.empty]}>

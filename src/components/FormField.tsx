@@ -17,20 +17,20 @@ export default function FormField({ label, error, touched, onBlur, onFocus, styl
       <Text style={styles.label}>{label}</Text>
       <TextInput
         accessibilityLabel={label}
-        placeholderTextColor={colors.muted}
+        placeholderTextColor={colors.placeholderOnDark}
         {...inputProps}
         onBlur={(event) => { setFocused(false); onBlur?.(event); }}
         onFocus={(event) => { setFocused(true); onFocus?.(event); }}
         style={[styles.input, focused ? styles.focused : undefined, showError ? styles.invalid : undefined, style]}
       />
-      {showError ? <Text accessibilityLiveRegion="polite" style={styles.error}>{error}</Text> : null}
+      {showError ? <Text accessibilityLiveRegion="polite" accessibilityRole="alert" style={styles.error}>{error}</Text> : null}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   label: { color: colors.surface, fontSize: typography.size.label, fontWeight: typography.weight.bold, marginBottom: spacing.sm },
-  input: { backgroundColor: colors.rowSurface, borderColor: colors.track, borderRadius: radii.control, borderWidth: 1, color: colors.surface, fontSize: typography.size.body, minHeight: 52, paddingHorizontal: spacing.md },
+  input: { backgroundColor: colors.rowSurface, borderColor: colors.fieldBorder, borderRadius: radii.control, borderWidth: 1, color: colors.surface, fontSize: typography.size.body, minHeight: 52, paddingHorizontal: spacing.md },
   focused: { borderColor: colors.accent, borderWidth: 2 },
   invalid: { borderColor: colors.expenseOnDark },
   error: { color: colors.expenseOnDark, fontSize: typography.size.caption, marginTop: 6 },

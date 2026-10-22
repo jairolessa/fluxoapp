@@ -1,9 +1,10 @@
 import { useState } from 'react';
-import { Alert, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 import PrimaryButton from '../../components/PrimaryButton';
 import Screen, { screenStyles as page } from '../../components/Screen';
 import { categoriesFor, Transaction } from '../../domain/finance';
 import { colors, interactions, minTouchTarget, radii, spacing } from '../../theme/tokens';
+import { noticeStore } from '../../services/noticeStore';
 
 type TransactionCategoryScreenProps = {
   transaction: Transaction | null;
@@ -25,9 +26,9 @@ export default function TransactionCategoryScreen({ transaction, ready, onBack, 
     setSaving(true);
     try {
       if (await onSave(selected)) setSavedCategory(selected);
-      else Alert.alert('Não foi possível salvar', 'A movimentação não foi encontrada.');
+      else noticeStore.show('Não foi possível salvar. A movimentação não foi encontrada.', 'error');
     } catch {
-      Alert.alert('Não foi possível salvar', 'Tente novamente em instantes.');
+      noticeStore.show('Não foi possível salvar. Tente novamente em instantes.', 'error');
     } finally {
       setSaving(false);
     }

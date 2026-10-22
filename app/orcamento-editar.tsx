@@ -1,6 +1,7 @@
 import { useRouter } from 'expo-router';
 import { useBudget } from '../src/hooks/useBudget';
 import BudgetEditScreen from '../src/screens/budget/BudgetEditScreen';
+import { noticeStore } from '../src/services/noticeStore';
 import { budgetStore } from '../src/services/budgetStore';
 
 export default function BudgetEditRoute() {
@@ -14,7 +15,10 @@ export default function BudgetEditRoute() {
       configured={configured}
       limits={limits}
       onBack={() => (router.canGoBack() ? router.back() : router.replace('/orcamento'))}
-      onSave={(next) => budgetStore.save(next)}
+      onSave={async (next) => {
+        await budgetStore.save(next);
+        noticeStore.show('Orçamento atualizado.');
+      }}
     />
   );
 }

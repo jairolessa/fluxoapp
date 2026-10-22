@@ -62,6 +62,13 @@ export const transactionStore = {
     return created;
   },
 
+  async remove(id: string): Promise<boolean> {
+    if (!state.items.some((item) => item.id === id)) return false;
+    setState({ ...state, items: state.items.filter((item) => item.id !== id) });
+    await persist();
+    return true;
+  },
+
   async updateCategory(id: string, category: string): Promise<boolean> {
     if (!state.items.some((item) => item.id === id)) return false;
     setState({ ...state, items: state.items.map((item) => (item.id === id ? { ...item, category } : item)) });

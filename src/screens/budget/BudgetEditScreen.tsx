@@ -1,10 +1,11 @@
 import { useMemo, useState } from 'react';
-import { Alert, StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 import FormField from '../../components/FormField';
 import PrimaryButton from '../../components/PrimaryButton';
 import Screen, { screenStyles as shared } from '../../components/Screen';
 import { BudgetLimits, EXPENSE_CATEGORIES, formatCurrency, parseAmountToCents } from '../../domain/finance';
 import { colors, radii, spacing, typography } from '../../theme/tokens';
+import { noticeStore } from '../../services/noticeStore';
 
 type BudgetEditScreenProps = {
   limits: BudgetLimits;
@@ -35,7 +36,7 @@ export default function BudgetEditScreen({ limits, configured, onBack, onSave }:
       await onSave(draft);
       onBack();
     } catch {
-      Alert.alert('Não foi possível salvar', 'Tente novamente em instantes.');
+      noticeStore.show('Não foi possível salvar. Tente novamente em instantes.', 'error');
     } finally {
       setSaving(false);
     }
