@@ -1,7 +1,6 @@
 import { Formik } from 'formik';
 import { useState } from 'react';
 import {
-  Alert,
   KeyboardAvoidingView,
   Platform,
   Pressable,
@@ -13,7 +12,9 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import * as Yup from 'yup';
+import PrimaryButton from '../../components/PrimaryButton';
 import { colors as themeColors, typography } from '../../theme/tokens';
+import { noticeStore } from '../../services/noticeStore';
 
 const colors = {
   green: themeColors.brand,
@@ -59,7 +60,7 @@ export default function LoginScreen({ onSubmit, onCreateAccount, onForgotPasswor
     try {
       await onSubmit(values.email, values.password);
     } catch (err) {
-      Alert.alert('Não foi possível entrar', err instanceof Error ? err.message : 'Tente novamente.');
+      noticeStore.show(err instanceof Error ? err.message : 'Não foi possível entrar. Tente novamente.', 'error');
     }
   };
 
@@ -100,6 +101,7 @@ export default function LoginScreen({ onSubmit, onCreateAccount, onForgotPasswor
                 handleChange,
                 handleSubmit,
                 isValid,
+                isSubmitting,
                 isValidating,
                 touched,
                 values,
@@ -147,6 +149,7 @@ export default function LoginScreen({ onSubmit, onCreateAccount, onForgotPasswor
                       />
                       <Pressable
                         accessibilityLabel={isPasswordVisible ? 'Ocultar senha' : 'Mostrar senha'}
+                        accessibilityRole="button"
                         hitSlop={8}
                         onPress={() => setIsPasswordVisible((visible) => !visible)}
                         style={styles.visibilityButton}
@@ -169,21 +172,7 @@ export default function LoginScreen({ onSubmit, onCreateAccount, onForgotPasswor
                     <Text style={styles.forgotPasswordText}>Esqueci minha senha</Text>
                   </Pressable>
 
-                  <Pressable
-                    accessibilityRole="button"
-                    disabled={!isValid || isValidating}
-                    onFocus={() => setFocusedField('submit')}
-                    onBlur={() => setFocusedField(null)}
-                    onPress={() => handleSubmit()}
-                    style={({ pressed }) => [
-                      styles.loginButton,
-                      !isValid || isValidating ? styles.loginButtonDisabled : undefined,
-                      pressed && isValid && !isValidating ? styles.buttonPressed : undefined,
-                      focusedField === 'submit' ? styles.buttonFocused : undefined,
-                    ]}
-                  >
-                    <Text style={styles.loginButtonText}>Entrar</Text>
-                  </Pressable>
+                  <PrimaryButton disabled={!isValid || isValidating} label={isSubmitting ? 'Entrando…' : 'Entrar'} loading={isSubmitting} onPress={() => handleSubmit()} />
                 </View>
               )}
             </Formik>

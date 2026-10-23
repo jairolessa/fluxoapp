@@ -10,11 +10,12 @@ import {
   TextInput,
   TextInputProps,
   View,
-  Alert
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import * as Yup from 'yup';
+import PrimaryButton from '../../components/PrimaryButton';
 import { colors as themeColors, typography } from '../../theme/tokens';
+import { noticeStore } from '../../services/noticeStore';
 
 const colors = {
   green: themeColors.brand,
@@ -79,7 +80,7 @@ export default function RegisterScreen({
     try {
       await onSubmit(values.fullName, values.email, values.password);
     } catch (err) {
-      Alert.alert('Não foi possível criar a conta', err instanceof Error ? err.message : 'Tente novamente.');
+      noticeStore.show(err instanceof Error ? err.message : 'Não foi possível criar a conta. Tente novamente.', 'error');
     }
   };
 
@@ -122,6 +123,7 @@ export default function RegisterScreen({
                 handleChange,
                 handleSubmit,
                 isValid,
+                isSubmitting,
                 isValidating,
                 setFieldTouched,
                 setFieldValue,
@@ -205,21 +207,7 @@ export default function RegisterScreen({
                     ) : null}
                   </View>
 
-                  <Pressable
-                    accessibilityRole="button"
-                    disabled={!isValid || isValidating}
-                    onFocus={() => setIsCreateFocused(true)}
-                    onBlur={() => setIsCreateFocused(false)}
-                    onPress={() => handleSubmit()}
-                    style={({ pressed }) => [
-                      styles.createButton,
-                      !isValid || isValidating ? styles.createButtonDisabled : undefined,
-                      pressed && isValid && !isValidating ? styles.buttonPressed : undefined,
-                      isCreateFocused ? styles.buttonFocused : undefined,
-                    ]}
-                  >
-                    <Text style={styles.createButtonText}>Criar conta</Text>
-                  </Pressable>
+                  <PrimaryButton disabled={!isValid || isValidating} label={isSubmitting ? 'Criando conta…' : 'Criar conta'} loading={isSubmitting} onPress={() => handleSubmit()} />
                 </View>
               )}
             </Formik>
@@ -352,7 +340,7 @@ const styles = StyleSheet.create({
   visibilityText: { color: colors.darkGreen, fontSize: 13, fontWeight: '700' },
   termsRow: { alignItems: 'flex-start', flexDirection: 'row', gap: 10, minHeight: 44 },
   checkbox: { alignItems: 'center', borderColor: colors.border, borderRadius: 5, borderWidth: 1.5, height: 22, justifyContent: 'center', marginTop: 1, width: 22 },
-  checkboxChecked: { backgroundColor: colors.green, borderColor: colors.green },
+  checkboxChecked: { backgroundColor: colors.darkGreen, borderColor: colors.darkGreen },
   checkboxMark: { color: colors.white, fontSize: 15, fontWeight: '800' },
   termsText: { color: colors.muted, flex: 1, fontSize: 13, lineHeight: 20 },
   inputError: { borderColor: colors.danger },

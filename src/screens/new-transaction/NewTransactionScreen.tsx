@@ -1,6 +1,6 @@
 import { Formik } from 'formik';
 import { useState } from 'react';
-import { ActivityIndicator, Alert, Image, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, Image, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, View } from 'react-native';
 import * as Yup from 'yup';
 import Chip from '../../components/Chip';
 import FormField from '../../components/FormField';
@@ -10,6 +10,7 @@ import { categoriesFor, formatCurrency, NewTransactionInput, parseAmountToCents,
 import { useConnection } from '../../hooks/useConnection';
 import { DevicePermissionError, getCurrentPlace, pickReceipt } from '../../services/device';
 import { colors, radii, spacing, typography } from '../../theme/tokens';
+import { noticeStore } from '../../services/noticeStore';
 
 type Values = {
   type: TransactionType;
@@ -38,7 +39,7 @@ export default function NewTransactionScreen({ onSave }: NewTransactionScreenPro
 
   const handleDeviceError = (title: string, error: unknown) => {
     const message = error instanceof DevicePermissionError ? error.message : 'Não foi possível concluir agora. Tente novamente.';
-    Alert.alert(title, message);
+    noticeStore.show(`${title}. ${message}`, 'error');
   };
 
   const submit = async (values: Values, resetForm: () => void) => {
@@ -54,7 +55,7 @@ export default function NewTransactionScreen({ onSave }: NewTransactionScreenPro
       });
       resetForm();
     } catch {
-      Alert.alert('Não foi possível salvar', 'Tente novamente em instantes.');
+      noticeStore.show('Não foi possível salvar. Tente novamente em instantes.', 'error');
     }
   };
 
@@ -158,7 +159,7 @@ export default function NewTransactionScreen({ onSave }: NewTransactionScreenPro
                   {connection.online ? `Conectado: ${connection.label}.` : 'Sem conexão: a movimentação será salva neste aparelho.'}
                 </Text>
 
-                <PrimaryButton disabled={!isValid || isSubmitting} label="Salvar movimentação" onPress={() => handleSubmit()} />
+                <PrimaryButton disabled={!isValid} label={isSubmitting ? 'Salvando…' : 'Salvar movimentação'} loading={isSubmitting} onPress={() => handleSubmit()} />
               </ScrollView>
             );
           }}

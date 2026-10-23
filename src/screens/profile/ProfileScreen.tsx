@@ -1,5 +1,6 @@
-import { Alert, StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 import PrimaryButton from '../../components/PrimaryButton';
+import { confirmAction } from '../../services/confirm';
 import Screen, { screenStyles as shared } from '../../components/Screen';
 import { ConnectionInfo } from '../../hooks/useConnection';
 import { colors, spacing } from '../../theme/tokens';
@@ -17,11 +18,8 @@ type ProfileScreenProps = {
 };
 
 export default function ProfileScreen({ fullName, email, preferredName, connection, appVersion, updateId, onChangeName, onOpenBudget, onSignOut }: ProfileScreenProps) {
-  const confirmSignOut = () => {
-    Alert.alert('Sair da conta', 'Você precisará entrar novamente para ver suas movimentações.', [
-      { text: 'Cancelar', style: 'cancel' },
-      { text: 'Sair', style: 'destructive', onPress: onSignOut },
-    ]);
+  const confirmSignOut = async () => {
+    if (await confirmAction('Sair da conta?', 'Você precisará entrar novamente para ver suas movimentações.', 'Sair')) onSignOut();
   };
 
   return (

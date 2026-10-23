@@ -1,10 +1,11 @@
 import { Formik } from 'formik';
-import { Alert, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text } from 'react-native';
+import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text } from 'react-native';
 import * as Yup from 'yup';
 import FormField from '../../components/FormField';
 import PrimaryButton from '../../components/PrimaryButton';
 import Screen from '../../components/Screen';
 import { colors, spacing, typography } from '../../theme/tokens';
+import { noticeStore } from '../../services/noticeStore';
 
 type Values = { email: string; password: string; confirmPassword: string };
 
@@ -24,9 +25,10 @@ export default function ForgotPasswordScreen({ onBack, onSubmit, onDone }: Forgo
   const handleSubmit = async (values: Values) => {
     try {
       await onSubmit(values.email, values.password);
-      Alert.alert('Senha redefinida', 'Use a nova senha para entrar.', [{ text: 'Entrar', onPress: onDone }]);
+      noticeStore.show('Senha redefinida. Use a nova senha para entrar.');
+      onDone();
     } catch (error) {
-      Alert.alert('Não foi possível redefinir', error instanceof Error ? error.message : 'Tente novamente.');
+      noticeStore.show(error instanceof Error ? error.message : 'Não foi possível redefinir. Tente novamente.', 'error');
     }
   };
 
@@ -40,7 +42,7 @@ export default function ForgotPasswordScreen({ onBack, onSubmit, onDone }: Forgo
               <FormField autoCapitalize="none" autoComplete="email" autoCorrect={false} error={errors.email} keyboardType="email-address" label="E-mail" onBlur={handleBlur('email')} onChangeText={handleChange('email')} placeholder="voce@exemplo.com" touched={touched.email} value={values.email} />
               <FormField autoComplete="new-password" error={errors.password} label="Nova senha" onBlur={handleBlur('password')} onChangeText={handleChange('password')} placeholder="Mínimo de 6 caracteres" secureTextEntry touched={touched.password} value={values.password} />
               <FormField autoComplete="new-password" error={errors.confirmPassword} label="Confirmar nova senha" onBlur={handleBlur('confirmPassword')} onChangeText={handleChange('confirmPassword')} onSubmitEditing={() => submit()} placeholder="Repita a nova senha" returnKeyType="done" secureTextEntry touched={touched.confirmPassword} value={values.confirmPassword} />
-              <PrimaryButton disabled={!isValid || isSubmitting} label="Redefinir senha" onPress={() => submit()} />
+              <PrimaryButton disabled={!isValid} label={isSubmitting ? 'Redefinindo…' : 'Redefinir senha'} loading={isSubmitting} onPress={() => submit()} />
             </ScrollView>
           )}
         </Formik>
