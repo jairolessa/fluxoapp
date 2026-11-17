@@ -179,15 +179,7 @@ export default function LoginScreen({ onSubmit, onCreateAccount, onForgotPasswor
 
             <View style={styles.signupRow}>
               <Text style={styles.signupText}>Ainda não tem uma conta?</Text>
-              <Pressable
-                accessibilityRole="link"
-                onFocus={() => setFocusedField('signup')}
-                onBlur={() => setFocusedField(null)}
-                onPress={onCreateAccount}
-                style={({ pressed }) => [styles.signupLinkTarget, focusedField === 'signup' ? styles.linkFocused : undefined, pressed ? styles.buttonPressed : undefined]}
-              >
-                <Text style={styles.signupLink}> Criar conta</Text>
-              </Pressable>
+              <PrimaryButton label="Criar conta" onPress={onCreateAccount} variant="secondary" />
             </View>
           </View>
         </ScrollView>
@@ -238,9 +230,7 @@ const styles = StyleSheet.create({
   buttonPressed: { opacity: 0.86 },
   buttonFocused: { borderColor: colors.green, borderWidth: 3 },
   loginButtonText: { color: colors.white, fontSize: 16, fontWeight: '800' },
-  signupRow: { alignItems: 'center', flexDirection: 'row', justifyContent: 'center', marginTop: 26, minHeight: 44 },
-  signupText: { color: colors.muted, fontSize: 14 },
-  signupLink: { color: colors.darkGreen, fontSize: 14, fontWeight: '800' },
-  signupLinkTarget: { alignItems: 'center', justifyContent: 'center', minHeight: 44, minWidth: 44 },
+  signupRow: { gap: 12, marginTop: 24 },
+  signupText: { color: colors.muted, fontSize: 14, textAlign: 'center' },
   linkFocused: { borderColor: colors.green, borderRadius: 6, borderWidth: 2 },
 });

@@ -96,7 +96,7 @@ export default function NewTransactionScreen({ onSave }: NewTransactionScreenPro
                 <FormField
                   error={errors.amountDigits}
                   keyboardType="number-pad"
-                  label="Valor"
+                  label="Valor (obrigatório)"
                   onBlur={handleBlur('amountDigits')}
                   onChangeText={(text) => setFieldValue('amountDigits', cents === 0 && !text ? '' : String(parseAmountToCents(text)))}
                   placeholder="R$ 0,00"
@@ -107,7 +107,7 @@ export default function NewTransactionScreen({ onSave }: NewTransactionScreenPro
                 <FormField
                   autoCapitalize="sentences"
                   error={errors.description}
-                  label="Descrição"
+                  label="Descrição (obrigatória)"
                   maxLength={60}
                   onBlur={handleBlur('description')}
                   onChangeText={handleChange('description')}
@@ -117,7 +117,7 @@ export default function NewTransactionScreen({ onSave }: NewTransactionScreenPro
                 />
 
                 <View>
-                  <Text style={styles.label}>Categoria</Text>
+                  <Text style={styles.label}>Categoria (obrigatória)</Text>
                   <View accessibilityRole="radiogroup" style={styles.wrap}>
                     {categoriesFor(values.type).map((category) => (
                       <Chip key={category} label={category} onPress={() => { setFieldValue('category', category); setFieldTouched('category', true, false); }} selected={values.category === category} />
@@ -127,7 +127,10 @@ export default function NewTransactionScreen({ onSave }: NewTransactionScreenPro
                 </View>
 
                 <View style={styles.card}>
-                  <Text style={styles.cardTitle}>Comprovante</Text>
+                  <View>
+                    <Text style={styles.cardTitle}>Comprovante (opcional)</Text>
+                    <Text style={styles.cardText}>Você pode anexar uma foto agora ou continuar sem comprovante.</Text>
+                  </View>
                   {values.receiptUri ? <Image accessibilityLabel="Foto do comprovante" resizeMode="cover" source={{ uri: values.receiptUri }} style={styles.preview} /> : null}
                   <View style={styles.row}>
                     <PrimaryButton label={values.receiptUri ? 'Tirar outra foto' : 'Fotografar'} onPress={() => attachReceipt('camera')} style={styles.flex} variant="secondary" />
@@ -137,7 +140,10 @@ export default function NewTransactionScreen({ onSave }: NewTransactionScreenPro
                 </View>
 
                 <View style={styles.card}>
-                  <Text style={styles.cardTitle}>Local</Text>
+                  <View>
+                    <Text style={styles.cardTitle}>Local (opcional)</Text>
+                    <Text style={styles.cardText}>Adicionar localização é opcional.</Text>
+                  </View>
                   {values.location ? (
                     <Text style={styles.cardText}>
                       {values.location.label ?? `${values.location.latitude.toFixed(5)}, ${values.location.longitude.toFixed(5)}`}

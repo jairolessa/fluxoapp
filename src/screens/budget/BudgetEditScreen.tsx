@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, View } from 'react-native';
 import FormField from '../../components/FormField';
 import PrimaryButton from '../../components/PrimaryButton';
 import Screen, { screenStyles as shared } from '../../components/Screen';
@@ -43,10 +43,12 @@ export default function BudgetEditScreen({ limits, configured, onBack, onSave }:
   };
 
   return (
-    <Screen onBack={onBack} title={configured ? 'Editar orçamento' : 'Definir orçamento'}>
-      <Text style={shared.body}>Defina quanto você pretende gastar por mês em cada categoria. Avisamos quando você chegar perto do limite.</Text>
+    <Screen onBack={onBack} scroll={false} title={configured ? 'Editar orçamento' : 'Definir orçamento'}>
+      <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} keyboardVerticalOffset={Platform.OS === 'ios' ? 16 : 0} style={styles.flex}>
+        <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled" keyboardDismissMode="on-drag" showsVerticalScrollIndicator={false}>
+          <Text style={shared.body}>Defina quanto você pretende gastar por mês em cada categoria. Avisamos quando você chegar perto do limite.</Text>
 
-      <View style={styles.fields}>
+          <View style={styles.fields}>
         {EXPENSE_CATEGORIES.map((category) => {
           const cents = draft[category];
           return (
@@ -54,7 +56,8 @@ export default function BudgetEditScreen({ limits, configured, onBack, onSave }:
               error={cents > 0 ? undefined : 'Informe um limite maior que zero.'}
               key={category}
               keyboardType="number-pad"
-              label={category}
+              label={`${category} (obrigatório)`}
+              returnKeyType="done"
               onChangeText={(text) => setDigits((current) => ({ ...current, [category]: String(parseAmountToCents(text)) }))}
               placeholder="R$ 0,00"
               touched
@@ -62,19 +65,23 @@ export default function BudgetEditScreen({ limits, configured, onBack, onSave }:
             />
           );
         })}
-      </View>
+          </View>
 
-      <View accessible accessibilityLabel={`Total mensal: ${formatCurrency(total)}`} style={styles.total}>
+          <View accessible accessibilityLabel={`Total mensal: ${formatCurrency(total)}`} style={styles.total}>
         <Text style={styles.totalLabel}>Total mensal</Text>
         <Text style={styles.totalValue}>{formatCurrency(total)}</Text>
-      </View>
+          </View>
 
-      <PrimaryButton disabled={invalid || unchanged || saving} label={saving ? 'Salvando…' : 'Salvar orçamento'} onPress={handleSave} />
+          <PrimaryButton disabled={invalid || unchanged || saving} label={saving ? 'Salvando…' : 'Salvar orçamento'} onPress={handleSave} />
+        </ScrollView>
+      </KeyboardAvoidingView>
     </Screen>
   );
 }
 
 const styles = StyleSheet.create({
+  flex: { flex: 1 },
+  content: { flexGrow: 1, paddingBottom: spacing.xl },
   fields: { gap: spacing.md, marginBottom: spacing.lg, marginTop: spacing.lg },
   total: { alignItems: 'center', backgroundColor: colors.rowSurface, borderRadius: radii.control, flexDirection: 'row', justifyContent: 'space-between', marginBottom: spacing.lg, padding: spacing.md },
   totalLabel: { color: colors.mutedOnDark, fontSize: typography.size.body },

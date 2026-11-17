@@ -15,7 +15,7 @@ type BudgetScreenProps = {
   transactions: Transaction[];
   limits: BudgetLimits;
   configured: boolean;
-  onBack: () => void;
+  onBack?: () => void;
   onEdit: () => void;
 };
 

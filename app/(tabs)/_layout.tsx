@@ -8,6 +8,7 @@ const TABS: { name: string; title: string; icon: IconName; iconFocused: IconName
   { name: 'home', title: 'Início', icon: 'home-outline', iconFocused: 'home' },
   { name: 'extrato', title: 'Extrato', icon: 'list-outline', iconFocused: 'list' },
   { name: 'nova', title: 'Nova', icon: 'add-circle-outline', iconFocused: 'add-circle' },
+  { name: 'orcamento', title: 'Orçamento', icon: 'wallet-outline', iconFocused: 'wallet' },
   { name: 'perfil', title: 'Perfil', icon: 'person-outline', iconFocused: 'person' },
 ];
 
@@ -29,7 +30,7 @@ export default function TabsLayout() {
           options={{
             title: tab.title,
             tabBarAccessibilityLabel: tab.title,
-            tabBarIcon: ({ color, focused, size }) => <Ionicons color={color} name={focused ? tab.iconFocused : tab.icon} size={size} />,
+            tabBarIcon: ({ color, focused, size }) => <Ionicons color={String(color)} name={focused ? tab.iconFocused : tab.icon} size={size} />,
           }}
         />
       ))}

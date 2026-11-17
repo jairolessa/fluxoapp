@@ -79,3 +79,17 @@ Pesos: 400, 600, 700, 800. Linhas: 18, 22, 24, 36.
 - Login e cadastro ainda têm paleta local de campos (claros, sobre cartão branco); os contrastes foram auditados, mas não vêm dos tokens.
 - A verificação de contraste é calculada; não houve teste com leitor de tela (TalkBack/VoiceOver) em aparelho.
 - WCAG 2.0 não exige contraste de elementos gráficos; `fieldBorder` segue 3:1 por boa prática (critério da 2.1).
+
+## Registro da AV2 e conferência para a AV3
+
+Esta documentação descreve o design system do código e os dados apresentados na AV2. O material da AV2 registra 24 pares de contraste calculados (todos ≥ 4,5:1 para texto, menor 4,76:1), alvos de 44 × 44 pt e inspeção de rótulos, foco e estados. Esses resultados são cálculos e inspeções; não equivalem a uma auditoria automática completa nem a um teste com leitor de tela.
+
+O material da AV2 registra duas sessões Think Aloud em aparelho real (P1 e P2). As limitações encontradas nos formulários e no teclado do orçamento e as propostas associadas estão detalhadas na [matriz de iteração](matriz-iteracao.md). As sessões não verificaram TalkBack/VoiceOver.
+
+### Itens de design/accessibilidade a completar na AV3
+
+- Guardar relatório de uma ferramenta automática antes e depois das correções.
+- Testar uma tarefa completa com VoiceOver ou TalkBack, zoom/ampliação a 200% e simulação de daltonismo.
+- Verificar que os estados listados aqui funcionam em tela e aparelho, incluindo texto ampliado e foco real. O documento atual descreve estados pressionado e foco; estado hover não é aplicável a todos os contextos móveis e deve ser especificado para a versão web, se fizer parte da entrega.
+- A documentação disponível no repositório não contém link ou evidência do arquivo Figma nem demonstra que componentes do Figma são usados nas telas. Confirmar essa correspondência como parte da entrega, sem assumir que os componentes estão sincronizados.
+- Preservar a indicação de campos obrigatórios e a explicação de foto/localização opcionais como pendentes até a mudança e reteste de U-04.

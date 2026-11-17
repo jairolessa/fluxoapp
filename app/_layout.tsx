@@ -39,7 +39,6 @@ function RootNavigator() {
       <Stack.Screen name="forgot-password" />
       <Stack.Screen name="personalize-name" />
       <Stack.Screen name="(tabs)" />
-      <Stack.Screen name="orcamento" />
       <Stack.Screen name="orcamento-editar" />
       <Stack.Screen name="transaction/[id]" />
       <Stack.Screen name="transaction/[id]/category" />
