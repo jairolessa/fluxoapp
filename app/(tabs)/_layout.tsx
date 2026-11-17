@@ -1,5 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Tabs } from 'expo-router';
+import { useWindowDimensions } from 'react-native';
 import { colors, typography } from '../../src/theme/tokens';
 
 type IconName = keyof typeof Ionicons.glyphMap;
@@ -12,11 +13,16 @@ const TABS: { name: string; title: string; icon: IconName; iconFocused: IconName
   { name: 'perfil', title: 'Perfil', icon: 'person-outline', iconFocused: 'person' },
 ];
 
+// Below this width (for example at 200% zoom) five labels no longer fit; icons stay and tabBarAccessibilityLabel keeps the names.
+const MIN_WIDTH_FOR_TAB_LABELS = 300;
+
 export default function TabsLayout() {
+  const { width } = useWindowDimensions();
   return (
     <Tabs
       screenOptions={{
         headerShown: false,
+        tabBarShowLabel: width >= MIN_WIDTH_FOR_TAB_LABELS,
         tabBarActiveTintColor: colors.accent,
         tabBarInactiveTintColor: colors.mutedOnDark,
         tabBarLabelStyle: { fontSize: typography.size.caption, fontWeight: typography.weight.medium },

@@ -189,6 +189,7 @@ export default function RegisterScreen({
                       accessibilityRole="checkbox"
                       accessibilityLabel="Li e aceito os termos de uso e a política de privacidade"
                       accessibilityState={{ checked: values.acceptedTerms }}
+                      aria-checked={values.acceptedTerms}
                       onPress={() => {
                         setFieldValue('acceptedTerms', !values.acceptedTerms);
                         setFieldTouched('acceptedTerms', true, false);
@@ -203,7 +204,7 @@ export default function RegisterScreen({
                       </Text>
                     </Pressable>
                     {touched.acceptedTerms && errors.acceptedTerms ? (
-                      <Text accessibilityLiveRegion="polite" style={styles.errorText}>{errors.acceptedTerms}</Text>
+                      <Text accessibilityLiveRegion="polite" accessibilityRole="alert" style={styles.errorText}>{errors.acceptedTerms}</Text>
                     ) : null}
                   </View>
 
@@ -253,7 +254,7 @@ function Field({ error, label, touched, ...inputProps }: FieldProps) {
         placeholderTextColor={colors.muted}
         style={[styles.input, focused ? styles.inputFocused : undefined, touched && error ? styles.inputError : undefined]}
       />
-      {touched && error ? <Text accessibilityLiveRegion="polite" style={styles.errorText}>{error}</Text> : null}
+      {touched && error ? <Text accessibilityLiveRegion="polite" accessibilityRole="alert" style={styles.errorText}>{error}</Text> : null}
     </View>
   );
 }
@@ -312,7 +313,7 @@ function PasswordField({
           <Text style={styles.visibilityText}>{isVisible ? 'Ocultar' : 'Mostrar'}</Text>
         </Pressable>
       </View>
-      {touched && error ? <Text accessibilityLiveRegion="polite" style={styles.errorText}>{error}</Text> : null}
+      {touched && error ? <Text accessibilityLiveRegion="polite" accessibilityRole="alert" style={styles.errorText}>{error}</Text> : null}
     </View>
   );
 }

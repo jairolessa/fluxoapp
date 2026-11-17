@@ -84,7 +84,7 @@ export default function PersonalizeNameScreen({ initialName, onContinue }: Perso
                       value={values.preferredName}
                     />
                     {touched.preferredName && errors.preferredName ? (
-                      <Text accessibilityLiveRegion="polite" style={styles.errorText}>{errors.preferredName}</Text>
+                      <Text accessibilityLiveRegion="polite" accessibilityRole="alert" style={styles.errorText}>{errors.preferredName}</Text>
                     ) : null}
                   </View>
 

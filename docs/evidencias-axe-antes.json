@@ -1,0 +1,104 @@
+[
+ {
+  "screen": "login",
+  "violations": []
+ },
+ {
+  "screen": "cadastro",
+  "violations": [
+   {
+    "id": "aria-required-attr",
+    "impact": "critical",
+    "help": "Required ARIA attributes must be provided",
+    "nodes": 1,
+    "tags": "wcag412",
+    "sample": [
+     ".r-1habvwh"
+    ]
+   }
+  ]
+ },
+ {
+  "screen": "nome",
+  "violations": []
+ },
+ {
+  "screen": "inicio",
+  "violations": [
+   {
+    "id": "label-content-name-mismatch",
+    "impact": "serious",
+    "help": "Elements must have their visible text as part of their accessible name",
+    "nodes": 4,
+    "tags": "wcag253",
+    "sample": [
+     ".r-8b15pl",
+     ".r-adacv.r-1gzzd1q.r-1wtj0ep:nth-child(6)"
+    ]
+   }
+  ]
+ },
+ {
+  "screen": "extrato",
+  "violations": [
+   {
+    "id": "aria-required-attr",
+    "impact": "critical",
+    "help": "Required ARIA attributes must be provided",
+    "nodes": 3,
+    "tags": "wcag412",
+    "sample": [
+     ".r-v8wr0j.r-cpet4d.r-ujc0zz",
+     ".r-1wq0cks.r-cpet4d[role=\"radio\"]:nth-child(2)"
+    ]
+   },
+   {
+    "id": "label-content-name-mismatch",
+    "impact": "serious",
+    "help": "Elements must have their visible text as part of their accessible name",
+    "nodes": 8,
+    "tags": "wcag253",
+    "sample": [
+     ".css-g5y9jx:nth-child(3) > .r-adacv.r-1wtj0ep.r-1gzzd1q",
+     ".css-g5y9jx:nth-child(4) > .r-adacv.r-1wtj0ep.r-1gzzd1q"
+    ]
+   }
+  ]
+ },
+ {
+  "screen": "detalhes",
+  "violations": []
+ },
+ {
+  "screen": "nova",
+  "violations": [
+   {
+    "id": "aria-required-attr",
+    "impact": "critical",
+    "help": "Required ARIA attributes must be provided",
+    "nodes": 8,
+    "tags": "wcag412",
+    "sample": [
+     ".r-1fdih9r > .r-1cmwbt1.r-18u37iz[role=\"radiogroup\"] > .r-v8wr0j.r-ujc0zz.r-cpet4d",
+     ".r-1fdih9r > .r-1cmwbt1.r-18u37iz[role=\"radiogroup\"] > .r-cpet4d.r-1wq0cks[role=\"radio\"]"
+    ]
+   }
+  ]
+ },
+ {
+  "screen": "orcamento",
+  "violations": []
+ },
+ {
+  "screen": "orcamento-editar",
+  "violations": []
+ },
+ {
+  "screen": "perfil",
+  "violations": []
+ },
+ {
+  "screen": "esqueci-senha",
+  "violations": []
+ }
+]

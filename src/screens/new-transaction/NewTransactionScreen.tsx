@@ -88,7 +88,7 @@ export default function NewTransactionScreen({ onSave }: NewTransactionScreenPro
 
             return (
               <ScrollView contentContainerStyle={styles.form} keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
-                <View accessibilityRole="radiogroup" style={styles.row}>
+                <View accessibilityRole="radiogroup" style={styles.wrap}>
                   <Chip label="Despesa" onPress={() => { setFieldValue('type', 'expense'); setFieldValue('category', ''); }} selected={values.type === 'expense'} />
                   <Chip label="Receita" onPress={() => { setFieldValue('type', 'income'); setFieldValue('category', ''); }} selected={values.type === 'income'} />
                 </View>
@@ -123,7 +123,7 @@ export default function NewTransactionScreen({ onSave }: NewTransactionScreenPro
                       <Chip key={category} label={category} onPress={() => { setFieldValue('category', category); setFieldTouched('category', true, false); }} selected={values.category === category} />
                     ))}
                   </View>
-                  {touched.category && errors.category ? <Text accessibilityLiveRegion="polite" style={styles.error}>{errors.category}</Text> : null}
+                  {touched.category && errors.category ? <Text accessibilityLiveRegion="polite" accessibilityRole="alert" style={styles.error}>{errors.category}</Text> : null}
                 </View>
 
                 <View style={styles.card}>
@@ -161,7 +161,7 @@ export default function NewTransactionScreen({ onSave }: NewTransactionScreenPro
                   )}
                 </View>
 
-                <Text accessibilityLiveRegion="polite" style={styles.connection}>
+                <Text accessibilityLiveRegion="polite" accessibilityRole="alert" style={styles.connection}>
                   {connection.online ? `Conectado: ${connection.label}.` : 'Sem conexão: a movimentação será salva neste aparelho.'}
                 </Text>
 

@@ -125,7 +125,7 @@ export default function LoginScreen({ onSubmit, onCreateAccount, onForgotPasswor
                       value={values.email}
                     />
                     {touched.email && errors.email ? (
-                      <Text accessibilityLiveRegion="polite" style={styles.errorText}>{errors.email}</Text>
+                      <Text accessibilityLiveRegion="polite" accessibilityRole="alert" style={styles.errorText}>{errors.email}</Text>
                     ) : null}
                   </View>
 
@@ -158,7 +158,7 @@ export default function LoginScreen({ onSubmit, onCreateAccount, onForgotPasswor
                       </Pressable>
                     </View>
                     {touched.password && errors.password ? (
-                      <Text accessibilityLiveRegion="polite" style={styles.errorText}>{errors.password}</Text>
+                      <Text accessibilityLiveRegion="polite" accessibilityRole="alert" style={styles.errorText}>{errors.password}</Text>
                     ) : null}
                   </View>
 

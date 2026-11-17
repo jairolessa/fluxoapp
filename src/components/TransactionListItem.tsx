@@ -13,10 +13,12 @@ function TransactionListItem({ transaction, onPress }: TransactionListItemProps)
   const amount = formatSignedCurrency(transaction);
   const date = formatDate(transaction.occurredAt);
   const kind = transaction.type === 'income' ? 'Receita' : 'Despesa';
+  // Same text and order as the visible row, so voice control can target it (WCAG 2.5.3); kind and hint come after.
+  const meta = `${transaction.category} · ${date}${transaction.receiptUri ? ' · 📎' : ''}${transaction.location ? ' · 📍' : ''}`;
 
   return (
     <Pressable
-      accessibilityLabel={`${kind}: ${transaction.description}, ${transaction.category}, ${amount}, ${date}. Ver detalhes`}
+      accessibilityLabel={`${transaction.description} ${meta} ${amount}. ${kind}. Ver detalhes`}
       accessibilityRole="button"
       onBlur={() => setFocused(false)}
       onFocus={() => setFocused(true)}
@@ -24,11 +26,11 @@ function TransactionListItem({ transaction, onPress }: TransactionListItemProps)
       style={({ pressed }) => [styles.row, pressed ? styles.pressed : undefined, focused ? styles.focused : undefined]}
     >
       <View style={styles.description}>
-        <Text numberOfLines={1} style={styles.title}>{transaction.description}</Text>
+        <Text numberOfLines={1} style={styles.title}>{transaction.description} </Text>
         <Text style={styles.category}>
           {transaction.category} · {date}
           {transaction.receiptUri ? ' · 📎' : ''}
-          {transaction.location ? ' · 📍' : ''}
+          {transaction.location ? ' · 📍' : ''}{' '}
         </Text>
       </View>
       <Text style={transaction.type === 'income' ? styles.income : styles.expense}>{amount}</Text>

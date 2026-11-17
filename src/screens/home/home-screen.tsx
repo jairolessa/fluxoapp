@@ -59,9 +59,9 @@ export default function HomeScreen({ preferredName, transactions, limits, ready,
               </View>
             </View>
 
-            <Pressable accessibilityRole="button" accessibilityLabel={`${insight} Ver orçamento`} onPress={onOpenBudget} style={({ pressed }) => [styles.insight, pressed ? styles.pressed : undefined]}>
-              <Text style={styles.insightTitle}>Resumo do mês</Text>
-              <Text style={styles.insightText}>{insight}</Text>
+            <Pressable accessibilityRole="button" accessibilityLabel={`Resumo do mês ${insight} Ver orçamento ›`} onPress={onOpenBudget} style={({ pressed }) => [styles.insight, pressed ? styles.pressed : undefined]}>
+              <Text style={styles.insightTitle}>Resumo do mês </Text>
+              <Text style={styles.insightText}>{insight} </Text>
               <Text style={styles.insightLink}>Ver orçamento ›</Text>
             </Pressable>
 

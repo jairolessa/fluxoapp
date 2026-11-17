@@ -14,6 +14,7 @@ export default function Chip({ label, selected, onPress }: ChipProps) {
     <Pressable
       accessibilityRole="radio"
       accessibilityState={{ checked: selected }}
+      aria-checked={selected}
       onBlur={() => setFocused(false)}
       onFocus={() => setFocused(true)}
       onPress={onPress}

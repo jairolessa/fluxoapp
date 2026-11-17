@@ -1,0 +1,46 @@
+[
+ {
+  "screen": "login",
+  "violations": []
+ },
+ {
+  "screen": "cadastro",
+  "violations": []
+ },
+ {
+  "screen": "nome",
+  "violations": []
+ },
+ {
+  "screen": "inicio",
+  "violations": []
+ },
+ {
+  "screen": "extrato",
+  "violations": []
+ },
+ {
+  "screen": "detalhes",
+  "violations": []
+ },
+ {
+  "screen": "nova",
+  "violations": []
+ },
+ {
+  "screen": "orcamento",
+  "violations": []
+ },
+ {
+  "screen": "orcamento-editar",
+  "violations": []
+ },
+ {
+  "screen": "perfil",
+  "violations": []
+ },
+ {
+  "screen": "esqueci-senha",
+  "violations": []
+ }
+]
